@@ -14,3 +14,134 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+model User { 
+id         String   @id @default(uuid()) 
+name       String 
+createdAt  DateTime @default(now()) @map("created_at") 
+updatedAt  DateTime @updatedAt @map("updated_at") 
+supabaseId String   @unique @map("supabase_id") 
+
+resumes Resume[]
+contacts Contact[]
+aiUsages AiUsage[]
+
+@@map("users") 
+}
+
+model Contact { 
+id         String   @id @default(uuid()) 
+userId     String?   @map("user_id")
+user       User?     @relation(fields: [userId], references: [id])
+name       String 
+content    String
+email      String
+type       ContactType
+createdAt  DateTime @default(now()) @map("created_at") 
+updatedAt  DateTime @updatedAt @map("updated_at") 
+
+@@map("contacts") 
+}
+
+enum ContactType {
+  GENERAL      // 一般的なお問い合わせ
+  SUPPORT      // 使い方・不具合などのサポート
+  FEEDBACK     // 機能要望・フィードバック
+  OTHER        // その他
+}
+
+model AiUsage {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("ai_usages")
+}
+
+model Resume {
+  id              String       @id @default(uuid())
+  userId          String       @map("user_id")
+  user            User         @relation(fields: [userId], references: [id])
+
+  title           String
+  jobType         JobType      @map("job_type")
+  status          ResumeStatus @default(DRAFT)
+
+  // 基本情報
+  fullName        String       @map("full_name")
+  email           String
+  phone           String
+  address         String
+  photoUrl        String?      @map("photo_url")
+
+  // Resume内容
+  summary         String?
+  skills          Json
+  certificate     Json
+  visaInfo        String       @map("visa_info")
+  availability    String
+
+  // 学歴（最終学歴のみ）
+  educationSchool String?      @map("education_school")
+  educationMajor  String?      @map("education_major")
+  educationYear   Int?         @map("education_year")
+
+  // タイムスタンプ
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+
+  // リレーション
+  jobExperiences  JobExperience[]
+  chatMessages    ChatMessage[]
+
+  @@map("resumes")
+}
+
+enum JobType {
+  CAFE
+  FARM
+  HOTEL
+}
+
+enum ResumeStatus {
+  DRAFT
+  COMPLETED
+}
+
+model JobExperience {
+  id          String   @id @default(uuid())
+
+  resumeId    String   @map("resume_id")
+  resume      Resume   @relation(fields: [resumeId], references: [id])
+
+  companyName String   @map("company_name")
+  position    String
+  jobType     String   @map("job_type")
+  startDate   DateTime @map("start_date")
+  endDate     DateTime? @map("end_date")
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("job_experiences")
+}
+
+model ChatMessage {
+  id          String   @id @default(uuid())
+  resumeId    String   @map("resume_id")
+  resume      Resume   @relation(fields: [resumeId], references: [id])
+  role        ChatRole 
+  content     String
+  stepNumber  Int      @map("step_number")
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("chat_messages")
+}
+
+enum ChatRole {
+  AI
+  USER
+}
