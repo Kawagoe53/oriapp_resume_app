@@ -70,7 +70,9 @@ export default function SignUpForm() {
           errorMessage={errors.confirmPassword?.message}
         />
 
-        <Button disabled={isSubmitting}>登録</Button>
+        <Button type="submit" disabled={isSubmitting}>
+          登録
+        </Button>
       </form>
     </div>
   );
