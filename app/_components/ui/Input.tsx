@@ -2,6 +2,7 @@
 
 import { ComponentProps } from "react";
 import { UseFormRegisterReturn } from "react-hook-form";
+import { Label } from "./Label";
 
 type Props = ComponentProps<"input"> & {
   errorMessage?: string;
@@ -17,7 +18,7 @@ export default function Input({
 }: Props) {
   return (
     <div>
-      <label htmlFor={props.id}>{label}</label>
+      {label && <Label htmlFor={props.id}>{label}</Label>}
       <input {...registration} {...props} />
       {errorMessage && <p className="text-red-500">{errorMessage}</p>}
     </div>
