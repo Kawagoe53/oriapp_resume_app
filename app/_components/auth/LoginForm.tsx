@@ -1,6 +1,6 @@
 "use client";
 
-import { supabase } from "@/app/_libs/supabase"; // 前の工程で作成したファイル
+import { supabase } from "@/app/_libs/supabase";
 import { loginSchema, LogInSchemaValues } from "@/app/_schemas/authSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -57,7 +57,9 @@ export default function LogInForm() {
           errorMessage={errors.password?.message}
         />
 
-        <Button disabled={isSubmitting}>ログイン</Button>
+        <Button type="submit" disabled={isSubmitting}>
+          ログイン
+        </Button>
       </form>
     </div>
   );
