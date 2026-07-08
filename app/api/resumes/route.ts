@@ -35,8 +35,21 @@ export const GET = async (request: NextRequest) => {
 
   // tokenが正しい場合、以降が実行される
   try {
+    const appUser = await prisma.user.findUnique({
+      where: {
+        supabaseId: user.id,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!appUser) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
     const resumes = await prisma.resume.findMany({
-      where: { userId: user.id },
+      where: { userId: appUser.id },
       select: {
         id: true,
         createdAt: true,
@@ -57,7 +70,7 @@ export const GET = async (request: NextRequest) => {
     if (error instanceof Error)
       return NextResponse.json({ message: error.message }, { status: 400 });
   }
-  //下記コードがないとinstanceof Errorじゃない時undefinedになってしまうからレスポンスを返せなくなる
+  //下記コードがないと何も返ってこなかったという、意図しないエラー
   return NextResponse.json(
     { message: "Internal Server Error" },
     { status: 500 },
