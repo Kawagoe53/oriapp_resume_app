@@ -35,7 +35,7 @@ export const GET = async (request: NextRequest) => {
 
   // tokenが正しい場合、以降が実行される
   try {
-    const appUser = await prisma.user.findUnique({
+    const currentUser = await prisma.user.findUnique({
       where: {
         supabaseId: user.id,
       },
@@ -44,12 +44,12 @@ export const GET = async (request: NextRequest) => {
       },
     });
 
-    if (!appUser) {
+    if (!currentUser) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
     const resumes = await prisma.resume.findMany({
-      where: { userId: appUser.id },
+      where: { userId: currentUser.id },
       select: {
         id: true,
         createdAt: true,
