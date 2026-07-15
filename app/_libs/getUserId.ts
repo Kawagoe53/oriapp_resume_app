@@ -21,7 +21,11 @@ export default async function getUserId(request: NextRequest) {
       id: true,
     },
   });
-  //currentUserが存在するならidを返す。存在しないならnullを返す。
-  //”?? null”は左側がnullまたはudefinedならnullを返す
-  return currentUser?.id ?? null;
+  if (!currentUser) {
+    return null;
+
+    //currentUserが存在するならidを返す。存在しないならnullを返す。
+    //”?? null”は左側がnullまたはudefinedならnullを返す
+    return currentUser?.id ?? null;
+  }
 }

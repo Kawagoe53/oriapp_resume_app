@@ -17,9 +17,6 @@ export type ResumesIndexResponse = {
 export const GET = async (request: NextRequest) => {
   try {
     const userId = await getUserId(request);
-    if (!userId) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
 
     const resumes = await prisma.resume.findMany({
       where: { userId },
