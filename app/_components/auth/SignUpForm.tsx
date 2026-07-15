@@ -1,5 +1,6 @@
 "use client";
 
+import handleGoogleSignIn from "@/app/_libs/googleAuth";
 import { supabase } from "@/app/_libs/supabase"; // 前の工程で作成したファイル
 import { signUpSchema, SignUpSchemaValues } from "@/app/_schemas/authSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -71,7 +72,18 @@ export default function SignUpForm() {
         />
 
         <Button type="submit" disabled={isSubmitting}>
-          登録
+          ログイン
+        </Button>
+
+        <div className="relative my-6">
+          <div className="border-t border-gray-300" />
+          <span className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black px-3 text-sm text-white">
+            または
+          </span>
+        </div>
+
+        <Button type="button" onClick={handleGoogleSignIn}>
+          Googleで登録
         </Button>
       </form>
     </div>
