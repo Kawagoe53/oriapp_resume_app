@@ -37,6 +37,9 @@ export const GET = async (request: NextRequest) => {
       { status: 200 },
     );
   } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
     if (error instanceof Error)
       return NextResponse.json({ message: error.message }, { status: 400 });
   }
@@ -88,9 +91,6 @@ export type CreatePostResponse = {
 export const POST = async (request: NextRequest) => {
   try {
     const userId = await getUserId(request);
-    if (!userId) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
 
     const body: CreateResumeRequestBody = await request.json();
     const { resume, jobExperiences, chatMessages } = body;
@@ -117,6 +117,9 @@ export const POST = async (request: NextRequest) => {
       id: data.id,
     });
   } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
     if (error instanceof Error) {
       return NextResponse.json({ message: error.message }, { status: 400 });
     }

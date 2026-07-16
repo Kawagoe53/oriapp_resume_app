@@ -10,7 +10,7 @@ export default async function getUserId(request: NextRequest) {
   } = await supabase.auth.getUser(token);
 
   if (error || !user) {
-    return null;
+    throw new Error("Unauthorized");
   }
 
   const currentUser = await prisma.user.findUnique({
@@ -22,10 +22,7 @@ export default async function getUserId(request: NextRequest) {
     },
   });
   if (!currentUser) {
-    return null;
-
-    //currentUserが存在するならidを返す。存在しないならnullを返す。
-    //”?? null”は左側がnullまたはudefinedならnullを返す
-    return currentUser?.id ?? null;
+    throw new Error("Unauthorized");
   }
+  return currentUser.id;
 }

@@ -41,9 +41,6 @@ export const GET = async (
     const { id } = await params;
 
     const userId = await getUserId(request);
-    if (!userId) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
 
     const resume = await prisma.resume.findFirst({
       where: {
@@ -61,6 +58,9 @@ export const GET = async (
 
     return NextResponse.json<ResumeShowResponse>({ resume }, { status: 200 });
   } catch (error) {
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
     if (error instanceof Error)
       return NextResponse.json({ message: error.message }, { status: 400 });
   }
