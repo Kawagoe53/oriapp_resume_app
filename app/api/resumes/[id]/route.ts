@@ -1,3 +1,4 @@
+import buildError from "@/app/_libs/buildError";
 import getUserId from "@/app/_libs/getUserId";
 import { prisma } from "@/app/_libs/prisma";
 import { Prisma } from "@/app/generated/prisma/client";
@@ -58,14 +59,6 @@ export const GET = async (
 
     return NextResponse.json<ResumeShowResponse>({ resume }, { status: 200 });
   } catch (error) {
-    if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-    if (error instanceof Error)
-      return NextResponse.json({ message: error.message }, { status: 400 });
+    return buildError(error);
   }
-  return NextResponse.json(
-    { message: "Internal Server Error" },
-    { status: 500 },
-  );
 };

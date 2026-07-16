@@ -1,3 +1,4 @@
+import buildError from "@/app/_libs/buildError";
 import getUserId from "@/app/_libs/getUserId";
 import { prisma } from "@/app/_libs/prisma";
 import { Prisma } from "@/app/generated/prisma/client";
@@ -37,17 +38,8 @@ export const GET = async (request: NextRequest) => {
       { status: 200 },
     );
   } catch (error) {
-    if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-    if (error instanceof Error)
-      return NextResponse.json({ message: error.message }, { status: 400 });
+    return buildError(error);
   }
-  //下記コードがないと何も返ってこなかったという、意図しないエラーになる
-  return NextResponse.json(
-    { message: "Internal Server Error" },
-    { status: 500 },
-  );
 };
 
 type CreateResumeRequestBody = {
@@ -117,15 +109,6 @@ export const POST = async (request: NextRequest) => {
       id: data.id,
     });
   } catch (error) {
-    if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-    if (error instanceof Error) {
-      return NextResponse.json({ message: error.message }, { status: 400 });
-    }
+    return buildError(error);
   }
-  return NextResponse.json(
-    { message: "Internal Server Error" },
-    { status: 500 },
-  );
 };
