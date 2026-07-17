@@ -62,3 +62,76 @@ export const GET = async (
     return buildError(error);
   }
 };
+
+type UpdateResumeRequestBody = {
+  resume: {
+    title?: string;
+    jobType?: JobType;
+    fullName?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    photoUrl?: string | null;
+    summary?: string | null;
+    skills?: Prisma.InputJsonValue;
+    certificate?: Prisma.InputJsonValue;
+    visaInfo?: string;
+    availability?: string;
+    educationSchool?: string | null;
+    educationMajor?: string | null;
+    educationStartDate?: string | null;
+    educationEndDate?: string | null;
+    status?: ResumeStatus;
+  };
+
+  jobExperiences?: {
+    jobType: string;
+    companyName: string;
+    position: string;
+    startDate: string;
+    endDate?: string | null;
+  }[];
+};
+
+export const PATCH = async (
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) => {
+  try {
+    const { id } = await params;
+    const userId = await getUserId(request);
+
+    const body: UpdateResumeRequestBody = await request.json();
+
+    await prisma.resume.update({
+      where: {
+        id,
+        userId,
+      },
+      data: body.resume,
+    });
+
+    if (body.jobExperiences) {
+      await prisma.jobExperience.deleteMany({
+        where: {
+          resumeId: id,
+        },
+      });
+
+      await prisma.jobExperience.createMany({
+        data: body.jobExperiences.map((job) => ({
+          resumeId: id,
+          companyName: job.companyName,
+          jobType: job.jobType,
+          position: job.position,
+          startDate: job.startDate,
+          endDate: job.endDate,
+        })),
+      });
+    }
+
+    return NextResponse.json({ message: "OK" }, { status: 200 });
+  } catch (error) {
+    return buildError(error);
+  }
+};

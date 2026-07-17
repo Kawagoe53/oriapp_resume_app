@@ -5,7 +5,6 @@ import { Prisma } from "@/app/generated/prisma/client";
 import { ChatRole, JobType, ResumeStatus } from "@/app/generated/prisma/enums";
 import { NextRequest, NextResponse } from "next/server";
 
-// 投稿一覧APIのレスポンスの型
 export type ResumesIndexResponse = {
   resumes: {
     id: string;
@@ -32,7 +31,6 @@ export const GET = async (request: NextRequest) => {
       },
     });
 
-    // レスポンスを返す
     return NextResponse.json<ResumesIndexResponse>(
       { resumes },
       { status: 200 },
