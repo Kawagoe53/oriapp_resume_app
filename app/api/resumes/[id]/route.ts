@@ -65,26 +65,25 @@ export const GET = async (
 
 type UpdateResumeRequestBody = {
   resume: {
-    title?: string;
-    jobType?: JobType;
-    fullName?: string;
-    email?: string;
-    phone?: string;
-    address?: string;
-    photoUrl?: string | null;
-    summary?: string | null;
-    skills?: Prisma.InputJsonValue;
-    certificate?: Prisma.InputJsonValue;
-    visaInfo?: string;
-    availability?: string;
-    educationSchool?: string | null;
-    educationMajor?: string | null;
-    educationStartDate?: string | null;
-    educationEndDate?: string | null;
+    title: string;
+    jobType: JobType;
+    fullName: string;
+    email: string;
+    phone: string;
+    address: string;
+    photoUrl: string | null;
+    summary: string | null;
+    skills: Prisma.InputJsonValue;
+    certificate: Prisma.InputJsonValue;
+    visaInfo: string;
+    availability: string;
+    educationSchool: string | null;
+    educationMajor: string | null;
+    educationYear: number | null;
     status?: ResumeStatus;
   };
 
-  jobExperiences?: {
+  jobExperiences: {
     jobType: string;
     companyName: string;
     position: string;
@@ -93,7 +92,7 @@ type UpdateResumeRequestBody = {
   }[];
 };
 
-export const PATCH = async (
+export const PUT = async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) => {
@@ -102,34 +101,35 @@ export const PATCH = async (
     const userId = await getUserId(request);
 
     const body: UpdateResumeRequestBody = await request.json();
+    const { resume, jobExperiences } = body;
 
-    await prisma.resume.update({
-      where: {
-        id,
-        userId,
-      },
-      data: body.resume,
-    });
-
-    if (body.jobExperiences) {
-      await prisma.jobExperience.deleteMany({
+    await prisma.$transaction(async (tx) => {
+      await tx.resume.update({
         where: {
-          resumeId: id,
+          id,
+          userId,
         },
+        data: resume,
       });
 
-      await prisma.jobExperience.createMany({
-        data: body.jobExperiences.map((job) => ({
-          resumeId: id,
-          companyName: job.companyName,
-          jobType: job.jobType,
-          position: job.position,
-          startDate: job.startDate,
-          endDate: job.endDate,
-        })),
-      });
-    }
-
+      if (jobExperiences) {
+        await tx.jobExperience.deleteMany({
+          where: {
+            resumeId: id,
+          },
+        });
+        await tx.jobExperience.createMany({
+          data: jobExperiences.map((job) => ({
+            resumeId: id,
+            companyName: job.companyName,
+            jobType: job.jobType,
+            position: job.position,
+            startDate: job.startDate,
+            endDate: job.endDate,
+          })),
+        });
+      }
+    });
     return NextResponse.json({ message: "OK" }, { status: 200 });
   } catch (error) {
     return buildError(error);
