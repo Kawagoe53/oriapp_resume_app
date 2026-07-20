@@ -130,7 +130,28 @@ export const PUT = async (
         });
       }
     });
-    return NextResponse.json({ message: "OK" }, { status: 200 });
+    return NextResponse.json({ message: "更新しました" }, { status: 200 });
+  } catch (error) {
+    return buildError(error);
+  }
+};
+
+export const DELETE = async (
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) => {
+  try {
+    const { id } = await params;
+    const userId = await getUserId(request);
+
+    await prisma.resume.delete({
+      where: {
+        id,
+        userId,
+      },
+    });
+
+    return NextResponse.json({ message: "削除しました" }, { status: 200 });
   } catch (error) {
     return buildError(error);
   }
