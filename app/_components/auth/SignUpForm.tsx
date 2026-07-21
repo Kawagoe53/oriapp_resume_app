@@ -72,7 +72,7 @@ export default function SignUpForm() {
         />
 
         <Button type="submit" disabled={isSubmitting}>
-          ログイン
+          登録
         </Button>
 
         <div className="relative my-6">

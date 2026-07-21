@@ -1,16 +1,16 @@
 import buildError from "@/app/_libs/buildError";
 import getUserId from "@/app/_libs/getUserId";
 import { prisma } from "@/app/_libs/prisma";
-import { Prisma } from "@/app/generated/prisma/client";
-import { ChatRole, JobType, ResumeStatus } from "@/app/generated/prisma/enums";
+import { JobType, ResumeStatus } from "@/app/generated/prisma/enums";
 import { NextRequest, NextResponse } from "next/server";
 
 export type ResumesIndexResponse = {
   resumes: {
     id: string;
+    title: string;
     createdAt: Date;
-    updatedAt: Date;
     status: ResumeStatus;
+    jobType: JobType;
   }[];
 };
 
@@ -22,9 +22,10 @@ export const GET = async (request: NextRequest) => {
       where: { userId },
       select: {
         id: true,
+        title: true,
         createdAt: true,
-        updatedAt: true,
         status: true,
+        jobType: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -40,42 +41,15 @@ export const GET = async (request: NextRequest) => {
   }
 };
 
-type CreateResumeRequestBody = {
+export type CreateResumeRequestBody = {
   resume: {
-    title: string;
     jobType: JobType;
-    fullName: string;
-    email: string;
-    phone: string;
-    address: string;
-    photoUrl: string | null;
-    summary: string | null;
-    skills: Prisma.InputJsonValue;
-    certificate: Prisma.InputJsonValue;
-    visaInfo: string;
-    availability: string;
-    educationSchool: string | null;
-    educationMajor: string | null;
-    educationYear: number | null;
   };
-
-  jobExperiences: {
-    companyName: string;
-    position: string;
-    jobType: JobType;
-    startDate: Date;
-    endDate: Date | null;
-  }[];
-
-  chatMessages: {
-    role: ChatRole;
-    content: string;
-    stepNumber: number;
-  }[];
 };
-
-export type CreatePostResponse = {
-  id: string;
+export type CreateResumeResponse = {
+  resume: {
+    id: string;
+  };
 };
 
 export const POST = async (request: NextRequest) => {
@@ -83,28 +57,30 @@ export const POST = async (request: NextRequest) => {
     const userId = await getUserId(request);
 
     const body: CreateResumeRequestBody = await request.json();
-    const { resume, jobExperiences, chatMessages } = body;
+    const { resume } = body;
     const data = await prisma.resume.create({
       data: {
-        ...resume,
         userId,
-
-        jobExperiences: {
-          createMany: {
-            data: jobExperiences,
-          },
-        },
-        chatMessages: {
-          createMany: {
-            data: chatMessages,
-          },
-        },
+        jobType: resume.jobType,
+        title: "",
+        fullName: "",
+        email: "",
+        phone: "",
+        address: "",
+        photoUrl: null,
+        summary: "",
+        skills: [],
+        certificate: [],
+        visaInfo: "",
+        availability: "",
+        status: ResumeStatus.DRAFT,
       },
     });
 
-    // レスポンスを返す
-    return NextResponse.json<CreatePostResponse>({
-      id: data.id,
+    return NextResponse.json<CreateResumeResponse>({
+      resume: {
+        id: data.id,
+      },
     });
   } catch (error) {
     return buildError(error);

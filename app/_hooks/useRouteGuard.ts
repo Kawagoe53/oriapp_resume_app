@@ -11,7 +11,7 @@ export const useRouteGuard = () => {
 
     const fetcher = async () => {
       if (session === null) {
-        router.replace("/sign_in");
+        router.replace("/login");
       }
     };
 
