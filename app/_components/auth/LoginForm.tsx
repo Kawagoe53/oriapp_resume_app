@@ -29,7 +29,7 @@ export default function LogInForm() {
       alert("ログインに失敗しました");
     } else {
       reset();
-      router.push("/app/(protected)/resumes/page.tsxz");
+      router.push("/resumes");
     }
   };
 

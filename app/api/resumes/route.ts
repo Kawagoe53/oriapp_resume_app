@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 export type ResumesIndexResponse = {
   resumes: {
     id: string;
-    title: string;
+    title: string | null;
     createdAt: Date;
     status: ResumeStatus;
     jobType: JobType;
@@ -62,26 +62,19 @@ export const POST = async (request: NextRequest) => {
       data: {
         userId,
         jobType: resume.jobType,
-        title: "",
-        fullName: "",
-        email: "",
-        phone: "",
-        address: "",
-        photoUrl: null,
-        summary: "",
-        skills: [],
-        certificate: [],
-        visaInfo: "",
-        availability: "",
-        status: ResumeStatus.DRAFT,
       },
     });
 
-    return NextResponse.json<CreateResumeResponse>({
-      resume: {
-        id: data.id,
+    return NextResponse.json<CreateResumeResponse>(
+      {
+        resume: {
+          id: data.id,
+        },
       },
-    });
+      {
+        status: 201,
+      },
+    );
   } catch (error) {
     return buildError(error);
   }

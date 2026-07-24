@@ -1,58 +1,28 @@
 "use client";
 
 import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
-import { supabase } from "@/app/_libs/supabase";
-import { JobType, ResumeStatus } from "@/app/generated/prisma/client";
+import { ResumesIndexResponse } from "@/app/api/resumes/route";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import useSWR from "swr";
 
-export type ResumeIndexResponse = {
-  resumes: {
-    id: string;
-    title: string;
-    createdAt: string;
-    status: ResumeStatus;
-    jobType: JobType;
-  }[];
+const fetcher = async ([url, token]: [string, string]) => {
+  const res = await fetch(url, {
+    headers: {
+      Authorization: token,
+    },
+  });
+  return res.json();
 };
 
 export default function GetResumes() {
   const { token } = useSupabaseSession();
-  const [isLoading, setIsLoading] = useState(true);
-  const [resumes, setResumes] = useState<ResumeIndexResponse["resumes"]>([]);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetcher = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+  const { data, error, isLoading } = useSWR<ResumesIndexResponse>(
+    token ? ["/api/resumes/", token] : null,
+    fetcher,
+  );
 
-      console.log(session?.access_token);
-      try {
-        if (!token) {
-          return;
-        }
-        const res = await fetch("/api/resumes/", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-        });
-        const data: ResumeIndexResponse = await res.json();
-        const { resumes } = data;
-        setResumes(resumes);
-      } catch (error) {
-        console.error(error);
-        setError("エラーが発生しました");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetcher();
-  }, [token]);
-
+  const resumes = data?.resumes ?? [];
   if (isLoading) {
     return (
       <div className="max-w-3xl mx-auto p-8">

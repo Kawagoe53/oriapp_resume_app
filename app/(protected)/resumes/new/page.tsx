@@ -1,7 +1,10 @@
 "use client";
 
 import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
-import { CreateResumeRequestBody } from "@/app/api/resumes/route";
+import {
+  CreateResumeRequestBody,
+  CreateResumeResponse,
+} from "@/app/api/resumes/route";
 import { JobType } from "@/app/generated/prisma/enums";
 import { useRouter } from "next/navigation";
 
@@ -15,7 +18,10 @@ export default function NewResumePage() {
 
   const onSelectJobType = async (jobType: JobType) => {
     try {
-      if (!token) return;
+      if (!token) {
+        setError("ログインしてください");
+        return;
+      }
       const requestBody: CreateResumeRequestBody = {
         resume: {
           jobType,
@@ -34,7 +40,7 @@ export default function NewResumePage() {
         return;
       }
 
-      const data = await res.json();
+      const data: CreateResumeResponse = await res.json();
       router.push(`/resumes/${data.resume.id}/chat`);
     } catch (error) {
       console.error(error);
