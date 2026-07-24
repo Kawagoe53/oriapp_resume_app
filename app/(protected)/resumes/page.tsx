@@ -1,26 +1,12 @@
 "use client";
 
-import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
+import useFetch from "@/app/_hooks/useFetch";
 import { ResumesIndexResponse } from "@/app/api/resumes/route";
 import Link from "next/link";
-import useSWR from "swr";
-
-const fetcher = async ([url, token]: [string, string]) => {
-  const res = await fetch(url, {
-    headers: {
-      Authorization: token,
-    },
-  });
-  return res.json();
-};
 
 export default function GetResumes() {
-  const { token } = useSupabaseSession();
-
-  const { data, error, isLoading } = useSWR<ResumesIndexResponse>(
-    token ? ["/api/resumes/", token] : null,
-    fetcher,
-  );
+  const { data, error, isLoading } =
+    useFetch<ResumesIndexResponse>("/api/resumes");
 
   const resumes = data?.resumes ?? [];
   if (isLoading) {
