@@ -61,23 +61,23 @@ model Resume {
   userId          String       @map("user_id")
   user            User         @relation(fields: [userId], references: [id])
 
-  title           String
+  title           String?
   jobType         JobType      @map("job_type")
   status          ResumeStatus @default(DRAFT)
 
   // 基本情報
-  fullName        String       @map("full_name")
-  email           String
-  phone           String
-  address         String
+  fullName        String?       @map("full_name")
+  email           String?
+  phone           String?
+  address         String?
   photoUrl        String?      @map("photo_url")
 
   // Resume内容
   summary         String?
-  skills          Json
-  certificate     Json
-  visaInfo        String       @map("visa_info")
-  availability    String
+  skills          Json?
+  certificate     Json?
+  visaInfo        String?       @map("visa_info")
+  availability    String?
 
   // 学歴（最終学歴のみ）
   educationSchool String?      @map("education_school")

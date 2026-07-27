@@ -9,21 +9,21 @@ export type ResumeShowResponse = {
   resume: {
     id: string;
     userId: string;
-    title: string;
+    title: string | null;
     jobType: JobType;
     status: ResumeStatus;
 
-    fullName: string;
-    email: string;
-    phone: string;
-    address: string;
+    fullName: string | null;
+    email: string | null;
+    phone: string | null;
+    address: string | null;
     photoUrl: string | null;
 
     summary: string | null;
-    skills: Prisma.JsonValue;
-    certificate: Prisma.JsonValue;
-    visaInfo: string;
-    availability: string;
+    skills: Prisma.JsonValue | null;
+    certificate: Prisma.JsonValue | null;
+    visaInfo: string | null;
+    availability: string | null;
 
     educationSchool: string | null;
     educationMajor: string | null;
@@ -63,7 +63,7 @@ export const GET = async (
   }
 };
 
-type UpdateResumeRequestBody = {
+export type UpdateResumeRequestBody = {
   resume: {
     title: string;
     jobType: JobType;
@@ -80,7 +80,6 @@ type UpdateResumeRequestBody = {
     educationSchool: string | null;
     educationMajor: string | null;
     educationYear: number | null;
-    status?: ResumeStatus;
   };
 
   jobExperiences: {

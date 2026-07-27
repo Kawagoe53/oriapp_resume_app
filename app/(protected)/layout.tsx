@@ -2,44 +2,62 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRouteGuard } from "../_hooks/useRouteGuard";
+import { useState } from "react";
 
-export default function AdminLayout({
+export default function ResumeLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  useRouteGuard();
-
   const pathname = usePathname();
-  const isSelected = (href: string) => {
-    return pathname.includes(href);
-  };
+  const [isOpen, setIsOpen] = useState(false);
+
+  const isSelected = (href: string) => pathname.startsWith(href);
 
   return (
     <>
+      {/* ハンバーガー */}
+      <div
+        className="fixed top-4 left-4 z-50"
+        onMouseEnter={() => setIsOpen(true)}
+      >
+        <button className="rounded-md bg-white p-2 shadow">☰</button>
+      </div>
+
       {/* サイドバー */}
-      <aside className="fixed bg-gray-100 w-70 left-0 bottom-0 top-18">
-        <Link
-          href="/resumes"
-          className={`p-4 block hover:bg-blue-100 ${
-            isSelected("/resumes") && "bg-blue-100"
-          }`}
-        >
-          履歴書一覧
-        </Link>
-        <Link
-          href="/aiUsage"
-          className={`p-4 block hover:bg-blue-100 ${
-            isSelected("/resumes") && "bg-blue-100"
-          }`}
-        >
-          AI使用回数
-        </Link>
+      <aside
+        onMouseLeave={() => setIsOpen(false)}
+        className={`
+          fixed left-0 top-0 z-40 h-screen w-64
+          bg-gray-100 shadow-lg
+          transition-transform duration-300
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}
+        `}
+      >
+        <div className="pt-16">
+          <Link
+            href="/resumes"
+            className={`block p-4 hover:bg-blue-100 ${
+              isSelected("/resumes") ? "bg-blue-100" : ""
+            }`}
+          >
+            履歴書一覧
+          </Link>
+
+          <Link
+            href="/aiUsage"
+            className={`block p-4 hover:bg-blue-100 ${
+              isSelected("/aiUsage") ? "bg-blue-100" : ""
+            }`}
+          >
+            AI使用回数
+          </Link>
+        </div>
       </aside>
 
-      {/* メインエリア */}
-      <div className="ml-70 p-4">{children}</div>
+      <main className="min-h-screen bg-gray-50 pl-20 pr-8 py-8">
+        {children}
+      </main>
     </>
   );
 }
