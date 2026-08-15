@@ -55,7 +55,7 @@ export default function ResumeLayout({
         </div>
       </aside>
 
-      <main className="min-h-screen bg-gray-50 pl-20 pr-8 py-8">
+      <main className="min-h-screen bg-gray-50 pl-20 pr-8 py-2">
         {children}
       </main>
     </>

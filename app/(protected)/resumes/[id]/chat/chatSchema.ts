@@ -1,0 +1,6 @@
+import { z } from "zod";
+
+export const chatSchema = z.object({
+  message: z.string().min(1, "メッセージを入力してください"),
+});
+export type ChatSchemaValues = z.infer<typeof chatSchema>;

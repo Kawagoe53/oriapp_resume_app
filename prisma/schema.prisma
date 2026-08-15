@@ -129,7 +129,7 @@ model ChatMessage {
   resumeId    String   @map("resume_id")
   resume      Resume   @relation(fields: [resumeId], references: [id])
   role        ChatRole 
-  content     String
+  content     Json
   stepNumber  Int      @map("step_number")
 
   createdAt   DateTime @default(now()) @map("created_at")
@@ -139,6 +139,6 @@ model ChatMessage {
 }
 
 enum ChatRole {
-  AI
+  ASSISTANT
   USER
 }
