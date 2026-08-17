@@ -2,6 +2,8 @@
 
 import useFetch from "@/app/_hooks/useFetch";
 import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
+import { CreateChatMessageRequestBody } from "@/app/_types/chat";
+import { ChatRole } from "@/app/generated/prisma/enums";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -13,7 +15,7 @@ import ChatMessage from "./components/ChatMessage";
 type MessagesShowResponse = {
   chatMessages: {
     id: string;
-    role: "ASSISTANT" | "USER";
+    role: ChatRole;
     content: string;
     stepNumber: number;
   }[];
@@ -43,28 +45,21 @@ export default function ResumeChatPage() {
     if (!token) {
       return;
     }
-    //↓ユーザーが回答している質問のstepNumberを取得
-    const currentQuestion = chatData?.chatMessages
-      .filter((message) => message.role === "ASSISTANT")
-      .at(-1);
 
-    if (!currentQuestion) {
-      return;
-    }
-
+    //サーバー側で
     setSubmitError(null);
 
     try {
+      const body: CreateChatMessageRequestBody = {
+        content: data.message,
+      };
       const res = await fetch(`/api/resumes/${resumeId}/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: token,
         },
-        body: JSON.stringify({
-          content: data.message,
-          stepNumber: currentQuestion.stepNumber,
-        }),
+        body: JSON.stringify(body),
       });
 
       if (!res.ok) {
@@ -75,7 +70,7 @@ export default function ResumeChatPage() {
       if (result.isCompleted) {
         setIsCompleted(true);
       }
-      await mutate();
+      mutate();
       reset();
     } catch (err) {
       setSubmitError(
@@ -83,6 +78,16 @@ export default function ResumeChatPage() {
       );
     }
   };
+
+  if (isLoading) {
+    return <p>ローディング中...</p>;
+  }
+  if (error) {
+    return <p>チャットの読み込みに失敗しました。</p>;
+  }
+  if (!chatData) {
+    return <p>チャットデータがありません。</p>;
+  }
   return (
     <div className="flex h-screen flex-col">
       <header className="border-b p-4">
@@ -93,19 +98,13 @@ export default function ResumeChatPage() {
       </header>
 
       <main className="flex-1 overflow-y-auto p-4">
-        {isLoading ? (
-          <p>ローディング中...</p>
-        ) : error ? (
-          <p>チャットの読み込みに失敗しました。</p>
-        ) : (
-          chatData?.chatMessages.map((message) => (
-            <ChatMessage
-              key={message.id}
-              role={message.role}
-              content={message.content}
-            />
-          ))
-        )}
+        {chatData.chatMessages.map((message) => (
+          <ChatMessage
+            key={message.id}
+            role={message.role}
+            content={message.content}
+          />
+        ))}
       </main>
 
       <footer className="border-t p-4">

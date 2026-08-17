@@ -1,5 +1,7 @@
+import { ChatRole } from "@/app/generated/prisma/enums";
+
 type ChatMessageProps = {
-  role: "ASSISTANT" | "USER";
+  role: ChatRole;
   content: string;
 };
 
@@ -11,11 +13,9 @@ export default function ChatMessage({ role, content }: ChatMessageProps) {
       }
     >
       <div
-        className={
-          role === "ASSISTANT"
-            ? "max-w-[70%] rounded-lg bg-gray-200 p-3"
-            : "max-w-[70%] rounded-lg bg-blue-500 p-3 text-white"
-        }
+        className={`max-w-[70%] rounded-lg p-3${
+          role === "ASSISTANT" ? " bg-gray-200 " : " bg-blue-500 text-white"
+        }`}
       >
         {content}
       </div>

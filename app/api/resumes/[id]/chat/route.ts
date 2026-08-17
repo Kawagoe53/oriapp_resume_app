@@ -2,12 +2,9 @@ import { questions } from "@/app/_constants/questions";
 import buildError from "@/app/_libs/buildError";
 import getUserId from "@/app/_libs/getUserId";
 import { prisma } from "@/app/_libs/prisma";
+import { CreateChatMessageRequestBody } from "@/app/_types/chat";
 import { NextRequest, NextResponse } from "next/server";
 
-type CreateChatMessageRequestBody = {
-  content: string;
-  stepNumber: number;
-};
 export const POST = async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -16,7 +13,7 @@ export const POST = async (
     const { id } = await params;
     const userId = await getUserId(request);
     const body: CreateChatMessageRequestBody = await request.json();
-    const { content, stepNumber } = body;
+    const { content } = body;
     const resume = await prisma.resume.findFirst({
       where: {
         id,
@@ -29,16 +26,32 @@ export const POST = async (
       });
     }
 
+    const latestQuestion = await prisma.chatMessage.findFirst({
+      where: {
+        resumeId: id,
+        role: "ASSISTANT",
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    if (!latestQuestion) {
+      return NextResponse.json(
+        { message: "現在の質問が見つかりません。" },
+        { status: 400 },
+      );
+    }
     await prisma.chatMessage.create({
       data: {
         resumeId: id,
         role: "USER",
         content,
-        stepNumber,
+        stepNumber: latestQuestion.stepNumber,
       },
     });
 
-    const nextStep = stepNumber + 1; //次のstepNumberの判断
+    const nextStep = latestQuestion.stepNumber + 1; //次のstepNumberの判断
 
     const nextQuestion = questions.find(
       //questions.tsから一致するものを取得
@@ -110,25 +123,8 @@ export const GET = async (
       },
     });
 
-    if (chatMessages.length === 0) {
-      const firstQuestion = questions[0];
-      const firstMessage = await prisma.chatMessage.create({
-        data: {
-          resumeId: id,
-          role: "ASSISTANT",
-          content: firstQuestion.question,
-          stepNumber: firstQuestion.stepNumber,
-        },
-      });
-
-      return NextResponse.json(
-        { chatMessages: [firstMessage] },
-        { status: 200 },
-      );
-    }
     return NextResponse.json({ chatMessages }, { status: 200 });
   } catch (error) {
-    console.error("GET chat error:", error);
     return buildError(error);
   }
 };
