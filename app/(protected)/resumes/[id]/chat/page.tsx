@@ -85,10 +85,7 @@ export default function ResumeChatPage() {
   if (error) {
     return <p>チャットの読み込みに失敗しました。</p>;
   }
-  if (!chatData) {
-    return <p>チャットデータがありません。</p>;
-  }
-  if (chatData.chatMessages.length === 0) {
+  if (chatData?.chatMessages.length === 0) {
     return <p>チャットメッセージがありません。</p>;
   }
   return (
