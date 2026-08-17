@@ -88,6 +88,9 @@ export default function ResumeChatPage() {
   if (!chatData) {
     return <p>チャットデータがありません。</p>;
   }
+  if (chatData.chatMessages.length === 0) {
+    return <p>チャットメッセージがありません。</p>;
+  }
   return (
     <div className="flex h-screen flex-col">
       <header className="border-b p-4">
