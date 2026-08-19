@@ -79,14 +79,14 @@ export default function ResumeChatPage() {
     }
   };
 
-  if (isLoading) {
-    return <p>ローディング中...</p>;
-  }
   if (error) {
     return <p>チャットの読み込みに失敗しました。</p>;
   }
-  if (chatData?.chatMessages.length === 0) {
-    return <p>チャットメッセージがありません。</p>;
+  if (!chatData) {//型ガードになってる 以降は必ずchatDataがある
+    return <p>ローディング中...</p>;
+  }
+  if (chatData.chatMessages.length === 0) {
+    return <p> データがありません</p>
   }
   return (
     <div className="flex h-screen flex-col">
