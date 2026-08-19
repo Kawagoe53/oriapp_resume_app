@@ -11,7 +11,10 @@ export default function GetResumes() {
   const resumes = data?.resumes ?? [];
   if (isLoading) {
     return (
-      <div className="max-w-3xl mx-auto p-8">
+      <div
+        className="max-w-3xl mx-auto 
+      p-8"
+      >
         <p>ローディング中...</p>
       </div>
     );
@@ -19,8 +22,8 @@ export default function GetResumes() {
   if (error) {
     return (
       <div className="max-w-3xl mx-auto bg-white p-8">
-        <p className="text-red-600">{error}</p>
-        <Link href="/" className="text-blue-600">
+        <p className="text-red-600">{error.message}</p>
+        <Link href="/resumes" className="text-blue-600">
           一覧へ戻る
         </Link>
       </div>

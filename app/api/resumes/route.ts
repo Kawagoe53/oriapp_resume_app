@@ -1,3 +1,4 @@
+import { questions } from "@/app/_constants/questions";
 import buildError from "@/app/_libs/buildError";
 import getUserId from "@/app/_libs/getUserId";
 import { prisma } from "@/app/_libs/prisma";
@@ -62,6 +63,16 @@ export const POST = async (request: NextRequest) => {
       data: {
         userId,
         jobType: resume.jobType,
+      },
+    });
+
+    const firstQuestion = questions[0];
+    await prisma.chatMessage.create({
+      data: {
+        resumeId: data.id,
+        role: "ASSISTANT",
+        content: firstQuestion.question,
+        stepNumber: firstQuestion.stepNumber,
       },
     });
 
