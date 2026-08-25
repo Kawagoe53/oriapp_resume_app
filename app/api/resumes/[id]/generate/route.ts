@@ -4,6 +4,7 @@ import { openai } from "@/app/_libs/openai";
 import { prisma } from "@/app/_libs/prisma";
 import { generatedResumeSchema } from "@/app/_schemas/aiResponseSchema";
 import { NextRequest, NextResponse } from "next/server";
+import { zodTextFormat } from "openai/helpers/zod";
 
 export const POST = async (
   request: NextRequest,
@@ -112,14 +113,18 @@ export const POST = async (
     .join("\n")}
   `;
     // ⑥ AI呼び出し
-    const response = await openai.responses.create({
+    const response = await openai.responses.parse({
       model: "gpt-5.4-mini",
       input: prompt,
+      text: {
+        format: zodTextFormat(generatedResumeSchema, "generated_resume"),
+      },
     });
-    const parsedResponse = JSON.parse(response.output_text);
-    // ⑦ generatedResume取得
-    const generatedResume = generatedResumeSchema.parse(parsedResponse);
-    console.log("generatedResume:", generatedResume);
+
+    const generatedResume = response.output_parsed;
+    if (!generatedResume) {
+      throw new Error("履歴書データの生成に失敗しました");
+    }
 
     await prisma.$transaction(async (tx) => {
       await tx.jobExperience.deleteMany({
@@ -147,20 +152,18 @@ export const POST = async (
           educationYear: generatedResume.educationYear,
         },
       });
-      for (const jobExperience of generatedResume.jobExperiences) {
-        await tx.jobExperience.create({
-          data: {
-            resumeId: id,
-            companyName: jobExperience.companyName,
-            position: jobExperience.position,
-            jobType: jobExperience.jobType,
-            startDate: new Date(`${jobExperience.startDate}-01-01`),
-            endDate: jobExperience.endDate
-              ? new Date(`${jobExperience.endDate}-01-01`)
-              : null,
-          },
-        });
-      }
+      await tx.jobExperience.createMany({
+        data: generatedResume.jobExperiences.map((jobExperience) => ({
+          resumeId: id,
+          companyName: jobExperience.companyName,
+          position: jobExperience.position,
+          jobType: jobExperience.jobType,
+          startDate: new Date(`${jobExperience.startDate}-01-01`),
+          endDate: jobExperience.endDate
+            ? new Date(`${jobExperience.endDate}-01-01`)
+            : null,
+        })),
+      });
     });
 
     return NextResponse.json(
