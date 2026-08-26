@@ -6,7 +6,7 @@ import { CreateChatMessageRequestBody } from "@/app/_types/chat";
 import { ChatRole } from "@/app/generated/prisma/enums";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { chatSchema, ChatSchemaValues } from "./chatSchema";
@@ -27,6 +27,7 @@ export default function ResumeChatPage() {
   const resumeId = params.id;
   const [isCompleted, setIsCompleted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -37,7 +38,6 @@ export default function ResumeChatPage() {
   const {
     data: chatData,
     error,
-    isLoading,
     mutate,
   } = useFetch<MessagesShowResponse>(`/api/resumes/${resumeId}/chat`);
 
@@ -46,7 +46,6 @@ export default function ResumeChatPage() {
       return;
     }
 
-    //サーバー側で
     setSubmitError(null);
 
     try {
@@ -79,10 +78,38 @@ export default function ResumeChatPage() {
     }
   };
 
+  const handleGenerate = async () => {
+    if (!token) {
+      return;
+    }
+    setSubmitError(null);
+
+    try {
+      const res = await fetch(`/api/resumes/${resumeId}/generate`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+        });
+  
+        if (!res.ok) {
+          throw new Error("履歴書の生成に失敗");
+        }
+        
+      router.push(`/resumes/${resumeId}/preview`);
+    } catch (err) {
+      setSubmitError(
+        err instanceof Error ? err.message : "履歴書の生成に失敗しました",
+      );
+    }
+
+  }
+
   if (error) {
     return <p>チャットの読み込みに失敗しました。</p>;
   }
-  if (!chatData) {//型ガードになってる 以降は必ずchatDataがある
+  if (!chatData) {
     return <p>ローディング中...</p>;
   }
   if (chatData.chatMessages.length === 0) {
@@ -118,7 +145,7 @@ export default function ResumeChatPage() {
           {errors.message && <p>{errors.message.message}</p>}
           {submitError && <p className="text-red-500">{submitError}</p>}
           {isCompleted ? (
-            <button type="button">Resume作成</button>
+            <button type="button"onClick={handleGenerate}>Resume作成</button>
           ) : (
             <button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "送信中..." : "送信"}
