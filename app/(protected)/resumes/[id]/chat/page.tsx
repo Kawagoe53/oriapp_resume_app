@@ -86,25 +86,24 @@ export default function ResumeChatPage() {
 
     try {
       const res = await fetch(`/api/resumes/${resumeId}/generate`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-        });
-  
-        if (!res.ok) {
-          throw new Error("履歴書の生成に失敗");
-        }
-        
-      router.push(`/resumes/${resumeId}/preview`);
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("履歴書の生成に失敗");
+      }
+
+      router.push(`/resumes/${resumeId}/generate`);
     } catch (err) {
       setSubmitError(
         err instanceof Error ? err.message : "履歴書の生成に失敗しました",
       );
     }
-
-  }
+  };
 
   if (error) {
     return <p>チャットの読み込みに失敗しました。</p>;
@@ -113,7 +112,7 @@ export default function ResumeChatPage() {
     return <p>ローディング中...</p>;
   }
   if (chatData.chatMessages.length === 0) {
-    return <p> データがありません</p>
+    return <p> データがありません</p>;
   }
   return (
     <div className="flex h-screen flex-col">
@@ -145,7 +144,9 @@ export default function ResumeChatPage() {
           {errors.message && <p>{errors.message.message}</p>}
           {submitError && <p className="text-red-500">{submitError}</p>}
           {isCompleted ? (
-            <button type="button"onClick={handleGenerate}>Resume作成</button>
+            <button type="button" onClick={handleGenerate}>
+              Resume作成
+            </button>
           ) : (
             <button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "送信中..." : "送信"}
