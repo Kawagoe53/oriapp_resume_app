@@ -4,6 +4,7 @@ export const jobExperienceSchema = z.object({
   companyName: z.string(),
   position: z.string(),
   jobType: z.string(),
+  description: z.array(z.string()),
   startDate: z.string(),
   endDate: z.string().nullable(),
 });
@@ -29,6 +30,4 @@ export const generatedResumeSchema = z.object({
   jobExperiences: z.array(jobExperienceSchema),
 });
 
-export type GeneratedResume = z.infer<
-  typeof generatedResumeSchema
->;
+export type GeneratedResume = z.infer<typeof generatedResumeSchema>;

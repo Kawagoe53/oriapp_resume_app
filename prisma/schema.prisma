@@ -118,6 +118,8 @@ model JobExperience {
   startDate   DateTime @map("start_date")
   endDate     DateTime? @map("end_date")
 
+  description Json?
+
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 

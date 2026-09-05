@@ -76,6 +76,11 @@ export const POST = async (
   - startDateとendDateはYYYY形式（年のみ）で返してください
   - 現在も勤務中の場合、endDateはnullにしてください
 
+  - summaryは、ユーザーの回答に含まれる職歴・スキル・人物特性などの情報から作成してください
+  - Summaryを作成できる情報が1つでもある場合は、簡潔な英文Summaryを生成してください
+  - Summaryを作成するための情報が全くない場合のみnullにしてください
+  - ユーザーが回答していない具体的な経験・スキル・資格などを推測して追加しないでください
+
   以下のJSON形式で返してください。
 
   {
@@ -96,6 +101,7 @@ export const POST = async (
         "companyName": string,
         "position": string,
         "jobType": string,
+        "description": string[],
         "startDate": string,
         "endDate": string | null
       }
@@ -158,6 +164,7 @@ export const POST = async (
           companyName: jobExperience.companyName,
           position: jobExperience.position,
           jobType: jobExperience.jobType,
+          description: jobExperience.description ?? [],
           startDate: new Date(`${jobExperience.startDate}-01-01`),
           endDate: jobExperience.endDate
             ? new Date(`${jobExperience.endDate}-01-01`)

@@ -1,38 +1,13 @@
 import buildError from "@/app/_libs/buildError";
 import getUserId from "@/app/_libs/getUserId";
 import { prisma } from "@/app/_libs/prisma";
+import {
+  ResumeShowResponse,
+  resumeShowResponseSchema,
+} from "@/app/_schemas/resumeResponseSchema";
 import { Prisma } from "@/app/generated/prisma/client";
-import { JobType, ResumeStatus } from "@/app/generated/prisma/enums";
+import { JobType } from "@/app/generated/prisma/enums";
 import { NextRequest, NextResponse } from "next/server";
-
-export type ResumeShowResponse = {
-  resume: {
-    id: string;
-    userId: string;
-    title: string | null;
-    jobType: JobType;
-    status: ResumeStatus;
-
-    fullName: string | null;
-    email: string | null;
-    phone: string | null;
-    address: string | null;
-    photoUrl: string | null;
-
-    summary: string | null;
-    skills: Prisma.JsonValue | null;
-    certificate: Prisma.JsonValue | null;
-    visaInfo: string | null;
-    availability: string | null;
-
-    educationSchool: string | null;
-    educationMajor: string | null;
-    educationYear: number | null;
-
-    createdAt: Date;
-    updatedAt: Date;
-  };
-};
 
 export const GET = async (
   request: NextRequest,
@@ -48,6 +23,9 @@ export const GET = async (
         id,
         userId,
       },
+      include: {
+        jobExperiences: true,
+      },
     });
 
     if (!resume) {
@@ -57,7 +35,15 @@ export const GET = async (
       );
     }
 
-    return NextResponse.json<ResumeShowResponse>({ resume }, { status: 200 });
+    const response = {
+      resume,
+    };
+
+    const parsedResponse = resumeShowResponseSchema.parse(response);
+
+    return NextResponse.json<ResumeShowResponse>(parsedResponse, {
+      status: 200,
+    });
   } catch (error) {
     return buildError(error);
   }
@@ -86,6 +72,7 @@ export type UpdateResumeRequestBody = {
     jobType: string;
     companyName: string;
     position: string;
+    description: Prisma.JsonValue | null;
     startDate: string;
     endDate?: string | null;
   }[];
