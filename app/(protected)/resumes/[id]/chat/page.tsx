@@ -78,31 +78,8 @@ export default function ResumeChatPage() {
     }
   };
 
-  const handleGenerate = async () => {
-    if (!token) {
-      return;
-    }
-    setSubmitError(null);
-
-    try {
-      const res = await fetch(`/api/resumes/${resumeId}/generate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token,
-        },
-      });
-
-      if (!res.ok) {
-        throw new Error("履歴書の生成に失敗");
-      }
-
-      router.push(`/resumes/${resumeId}/generate`);
-    } catch (err) {
-      setSubmitError(
-        err instanceof Error ? err.message : "履歴書の生成に失敗しました",
-      );
-    }
+  const handleGenerate = () => {
+    router.push(`/resumes/${resumeId}/generate`);
   };
 
   if (error) {

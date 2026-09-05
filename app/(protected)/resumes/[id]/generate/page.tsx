@@ -9,36 +9,29 @@ export default function GeneratePage() {
   const { id } = useParams();
 
   useEffect(() => {
-    const generateResume = async () => {
+    const handleGenerate = async () => {
       if (!token) {
         return;
       }
-      const response = await fetch(`/api/resumes/${id}/generate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token,
-        },
-      });
 
-      if (!response.ok) {
-        throw new Error("履歴書の生成に失敗しました");
-      }
-    };
-
-    const handleGenerate = async () => {
       try {
-        await Promise.all([
-          generateResume(),
-          new Promise((resolve) => setTimeout(resolve, 3000)),
-        ]);
+        const response = await fetch(`/api/resumes/${id}/generate`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("履歴書の生成に失敗しました");
+        }
 
         router.push(`/resumes/${id}/preview`);
       } catch (error) {
         console.error(error);
       }
     };
-
     handleGenerate();
   }, [id, router, token]);
 
