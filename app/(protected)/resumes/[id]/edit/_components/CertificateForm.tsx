@@ -1,0 +1,53 @@
+"use client";
+
+import { ResumeEditFormData } from "@/app/_schemas/resumeEditSchema";
+import {
+  FieldArrayWithId,
+  FieldErrors,
+  UseFieldArrayAppend,
+  UseFieldArrayRemove,
+  UseFormRegister,
+} from "react-hook-form";
+
+type CertificateFormProps = {
+  register: UseFormRegister<ResumeEditFormData>;
+  errors: FieldErrors<ResumeEditFormData>;
+  fields: FieldArrayWithId<ResumeEditFormData, "certificate", "id">[];
+  append: UseFieldArrayAppend<ResumeEditFormData, "certificate">;
+  remove: UseFieldArrayRemove;
+};
+
+export default function CertificateForm({
+  register,
+  errors,
+  fields,
+  append,
+  remove,
+}: CertificateFormProps) {
+  return (
+    <section>
+      <h2>Certificate</h2>
+
+      {fields.map((field, index) => (
+        <div key={field.id}>
+          <input
+            {...register(`certificate.${index}.value`)}
+            placeholder="Certificate"
+          />
+
+          <button type="button" onClick={() => remove(index)}>
+            Delete
+          </button>
+
+          {errors.certificate?.[index]?.value && (
+            <p>{errors.certificate[index]?.value?.message}</p>
+          )}
+        </div>
+      ))}
+
+      <button type="button" onClick={() => append({ value: "" })}>
+        Add Certificate
+      </button>
+    </section>
+  );
+}

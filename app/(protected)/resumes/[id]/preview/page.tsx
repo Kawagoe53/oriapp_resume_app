@@ -2,11 +2,11 @@
 
 import useFetch from "@/app/_hooks/useFetch";
 import { ResumeShowResponse } from "@/app/_schemas/resumeResponseSchema";
-import { useParams } from "next/navigation";
-import router from "next/router";
+import { useParams, useRouter } from "next/navigation";
 
 export default function PreviewPage() {
   const { id } = useParams();
+  const router = useRouter();
 
   const {
     data: resumeResponse,
