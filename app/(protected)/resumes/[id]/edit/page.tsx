@@ -186,7 +186,11 @@ export default function EditPage() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <h1>履歴書編集</h1>
-      <PersonalInformationForm register={register} errors={errors} />
+      <PersonalInformationForm
+        register={register}
+        errors={errors}
+        isSubmitting={isSubmitting}
+      />
 
       <CertificateForm
         register={register}
@@ -194,6 +198,7 @@ export default function EditPage() {
         fields={certificateFields}
         append={appendCertificate}
         remove={removeCertificate}
+        isSubmitting={isSubmitting}
       />
 
       <SkillsForm
@@ -202,9 +207,10 @@ export default function EditPage() {
         fields={skillFields}
         append={appendSkill}
         remove={removeSkill}
+        isSubmitting={isSubmitting}
       />
 
-      <SummaryForm register={register} />
+      <SummaryForm register={register} isSubmitting={isSubmitting} />
 
       {jobExperienceFields.map((field, index) => (
         <JobExperienceForm
@@ -212,6 +218,7 @@ export default function EditPage() {
           index={index}
           register={register}
           control={control}
+          isSubmitting={isSubmitting}
           onRemove={() => removeJobExperience(index)}
         />
       ))}
@@ -232,7 +239,11 @@ export default function EditPage() {
         + Add Job Experience
       </button>
 
-      <EducationForm register={register} errors={errors} />
+      <EducationForm
+        register={register}
+        errors={errors}
+        isSubmitting={isSubmitting}
+      />
 
       <button type="submit" disabled={isSubmitting}>
         {isSubmitting ? "保存中..." : "保存"}

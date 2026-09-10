@@ -16,25 +16,35 @@ type SkillsFormProps = {
   }[];
   append: UseFieldArrayAppend<ResumeEditFormData, "skills">;
   remove: UseFieldArrayRemove;
+  isSubmitting: boolean;
 };
 
 export default function SkillsForm({
   register,
   errors,
   fields,
+  isSubmitting,
   append,
   remove,
 }: SkillsFormProps) {
   return (
-    <section>
+    <form>
       <h2>Skills</h2>
 
       <div>
         {fields.map((field, index) => (
           <div key={field.id}>
-            <input {...register(`skills.${index}.value`)} placeholder="Skill" />
+            <input
+              {...register(`skills.${index}.value`)}
+              placeholder="Skill"
+              disabled={isSubmitting}
+            />
 
-            <button type="button" onClick={() => remove(index)}>
+            <button
+              type="button"
+              onClick={() => remove(index)}
+              disabled={isSubmitting}
+            >
               ×
             </button>
 
@@ -48,6 +58,6 @@ export default function SkillsForm({
       <button type="button" onClick={() => append({ value: "" })}>
         + Add Skill
       </button>
-    </section>
+    </form>
   );
 }

@@ -15,17 +15,19 @@ type CertificateFormProps = {
   fields: FieldArrayWithId<ResumeEditFormData, "certificate", "id">[];
   append: UseFieldArrayAppend<ResumeEditFormData, "certificate">;
   remove: UseFieldArrayRemove;
+  isSubmitting: boolean;
 };
 
 export default function CertificateForm({
   register,
   errors,
   fields,
+  isSubmitting,
   append,
   remove,
 }: CertificateFormProps) {
   return (
-    <section>
+    <form>
       <h2>Certificate</h2>
 
       {fields.map((field, index) => (
@@ -33,9 +35,14 @@ export default function CertificateForm({
           <input
             {...register(`certificate.${index}.value`)}
             placeholder="Certificate"
+            disabled={isSubmitting}
           />
 
-          <button type="button" onClick={() => remove(index)}>
+          <button
+            type="button"
+            onClick={() => remove(index)}
+            disabled={isSubmitting}
+          >
             Delete
           </button>
 
@@ -45,9 +52,13 @@ export default function CertificateForm({
         </div>
       ))}
 
-      <button type="button" onClick={() => append({ value: "" })}>
+      <button
+        type="button"
+        onClick={() => append({ value: "" })}
+        disabled={isSubmitting}
+      >
         Add Certificate
       </button>
-    </section>
+    </form>
   );
 }
