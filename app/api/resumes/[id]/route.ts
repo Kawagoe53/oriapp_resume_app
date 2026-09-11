@@ -5,8 +5,7 @@ import {
   ResumeShowResponse,
   resumeShowResponseSchema,
 } from "@/app/_schemas/resumeResponseSchema";
-import { Prisma } from "@/app/generated/prisma/client";
-import { JobType } from "@/app/generated/prisma/enums";
+import { UpdateResumeRequestBody } from "@/app/_types/edit";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (
@@ -49,35 +48,6 @@ export const GET = async (
   }
 };
 
-export type UpdateResumeRequestBody = {
-  resume: {
-    title: string;
-    jobType: JobType;
-    fullName: string;
-    email: string;
-    phone: string;
-    address: string;
-    photoUrl: string | null;
-    summary: string | null;
-    skills: Prisma.InputJsonValue;
-    certificate: Prisma.InputJsonValue;
-    visaInfo: string;
-    availability: string;
-    educationSchool: string | null;
-    educationMajor: string | null;
-    educationYear: number | null;
-  };
-
-  jobExperiences: {
-    jobType: string;
-    companyName: string;
-    position: string;
-    description: Prisma.JsonValue | null;
-    startDate: string;
-    endDate?: string | null;
-  }[];
-};
-
 export const PUT = async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -110,8 +80,9 @@ export const PUT = async (
             companyName: job.companyName,
             jobType: job.jobType,
             position: job.position,
-            startDate: job.startDate,
-            endDate: job.endDate,
+            description: job.description,
+            startDate: new Date(job.startDate),
+            endDate: job.endDate ? new Date(job.endDate) : null,
           })),
         });
       }
