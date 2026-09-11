@@ -24,12 +24,14 @@ export default function GeneratePage() {
         });
 
         if (!response.ok) {
-          throw new Error("履歴書の生成に失敗しました");
+          const { message } = await response.json();
+          throw new Error(message ?? "履歴書の生成に失敗しました");
         }
 
         router.push(`/resumes/${id}/preview`);
       } catch (error) {
-        console.error(error);
+        alert(error instanceof Error ? error.message : "履歴書の生成に失敗しました");
+        router.push("/aiUsage");
       }
     };
     handleGenerate();
