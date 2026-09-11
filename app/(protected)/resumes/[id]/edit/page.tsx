@@ -13,12 +13,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import CertificateForm from "./_components/CertificateForm";
-import EducationForm from "./_components/EducationForm";
-import JobExperienceForm from "./_components/JobExperienceForm";
-import PersonalInformationForm from "./_components/PersonalInformationForm";
-import SkillsForm from "./_components/SkillsForm";
-import SummaryForm from "./_components/SummaryForm";
+
+import CertificateFields from "./_components/CertificateFields";
+import EducationFields from "./_components/EducationFields";
+import JobExperienceFields from "./_components/JobExperienceFields";
+import PersonalInformationFields from "./_components/PersonalInformationFields";
+import SkillsFields from "./_components/SkillsFields";
+import SummaryFields from "./_components/SummaryFields";
 
 export default function EditPage() {
   const router = useRouter();
@@ -42,12 +43,12 @@ export default function EditPage() {
   });
 
   const {
-    fields: skillFields,
-    append: appendSkill,
-    remove: removeSkill,
+    fields: skillFields, //元々入っている配列
+    append: appendSkill, //配列の要素を追加する関数
+    remove: removeSkill, //配列の要素を削除する関数
   } = useFieldArray({
-    control,
-    name: "skills",
+    control, //react-hook-formのcontrolを渡す
+    name: "skills", //フォームの中の配列の名前
   });
 
   const {
@@ -185,69 +186,60 @@ export default function EditPage() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <h1>履歴書編集</h1>
-      <PersonalInformationForm
-        register={register}
-        errors={errors}
-        isSubmitting={isSubmitting}
-      />
+      <fieldset disabled={isSubmitting}>
+        <h1>履歴書編集</h1>
+        <PersonalInformationFields register={register} errors={errors} />
 
-      <CertificateForm
-        register={register}
-        errors={errors}
-        fields={certificateFields}
-        append={appendCertificate}
-        remove={removeCertificate}
-        isSubmitting={isSubmitting}
-      />
-
-      <SkillsForm
-        register={register}
-        errors={errors}
-        fields={skillFields}
-        append={appendSkill}
-        remove={removeSkill}
-        isSubmitting={isSubmitting}
-      />
-
-      <SummaryForm register={register} isSubmitting={isSubmitting} />
-
-      {jobExperienceFields.map((field, index) => (
-        <JobExperienceForm
-          key={field.id}
-          index={index}
+        <CertificateFields
           register={register}
-          control={control}
-          isSubmitting={isSubmitting}
-          onRemove={() => removeJobExperience(index)}
+          errors={errors}
+          fields={certificateFields}
+          append={appendCertificate}
+          remove={removeCertificate}
         />
-      ))}
 
-      <button
-        type="button"
-        onClick={() =>
-          appendJobExperience({
-            companyName: "",
-            position: "",
-            jobType: "",
-            startDate: "",
-            endDate: "",
-            description: [],
-          })
-        }
-      >
-        + Add Job Experience
-      </button>
+        <SkillsFields
+          register={register}
+          errors={errors}
+          fields={skillFields}
+          append={appendSkill}
+          remove={removeSkill}
+        />
 
-      <EducationForm
-        register={register}
-        errors={errors}
-        isSubmitting={isSubmitting}
-      />
+        <SummaryFields register={register} />
 
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "保存中..." : "保存"}
-      </button>
+        {jobExperienceFields.map((field, index) => (
+          <JobExperienceFields
+            key={field.id}
+            index={index}
+            register={register}
+            control={control}
+            onRemove={() => removeJobExperience(index)}
+          />
+        ))}
+
+        <button
+          type="button"
+          onClick={() =>
+            appendJobExperience({
+              companyName: "",
+              position: "",
+              jobType: "",
+              startDate: "",
+              endDate: "",
+              description: [],
+            })
+          }
+        >
+          + Add Job Experience
+        </button>
+
+        <EducationFields register={register} errors={errors} />
+
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "保存中..." : "保存"}
+        </button>
+      </fieldset>
     </form>
   );
 }

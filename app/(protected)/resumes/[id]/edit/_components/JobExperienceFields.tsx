@@ -7,15 +7,14 @@ type Props = {
   index: number;
   register: UseFormRegister<ResumeEditFormData>;
   control: Control<ResumeEditFormData>;
-  isSubmitting: boolean;
   onRemove: () => void;
 };
 
-export default function JobExperienceForm({
+export default function JobExperienceFields({
   index,
   register,
   control,
-  isSubmitting,
+
   onRemove,
 }: Props) {
   const {
@@ -28,17 +27,12 @@ export default function JobExperienceForm({
   });
 
   return (
-    <form className="space-y-4 rounded-lg border p-4">
+    <section className="space-y-4 rounded-lg border p-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className="font-semibold">Job Experience {index + 1}</h3>
 
-        <button
-          type="button"
-          onClick={onRemove}
-          className="text-red-500"
-          disabled={isSubmitting}
-        >
+        <button type="button" onClick={onRemove} className="text-red-500">
           Delete
         </button>
       </div>
@@ -49,7 +43,6 @@ export default function JobExperienceForm({
         <input
           {...register(`jobExperiences.${index}.companyName`)}
           className="w-full rounded border p-2"
-          disabled={isSubmitting}
         />
       </div>
 
@@ -59,7 +52,6 @@ export default function JobExperienceForm({
         <input
           {...register(`jobExperiences.${index}.position`)}
           className="w-full rounded border p-2"
-          disabled={isSubmitting}
         />
       </div>
 
@@ -69,7 +61,6 @@ export default function JobExperienceForm({
         <input
           {...register(`jobExperiences.${index}.jobType`)}
           className="w-full rounded border p-2"
-          disabled={isSubmitting}
         />
       </div>
 
@@ -79,7 +70,6 @@ export default function JobExperienceForm({
         <input
           {...register(`jobExperiences.${index}.startDate`)}
           className="w-full rounded border p-2"
-          disabled={isSubmitting}
         />
       </div>
 
@@ -89,7 +79,6 @@ export default function JobExperienceForm({
         <input
           {...register(`jobExperiences.${index}.endDate`)}
           className="w-full rounded border p-2"
-          disabled={isSubmitting}
         />
       </div>
 
@@ -105,13 +94,11 @@ export default function JobExperienceForm({
                 `jobExperiences.${index}.description.${descriptionIndex}.value`,
               )}
               className="flex-1 rounded border p-2"
-              disabled={isSubmitting}
             />
 
             <button
               type="button"
               onClick={() => removeDescription(descriptionIndex)}
-              disabled={isSubmitting}
               className="text-red-500"
             >
               ×
@@ -127,6 +114,6 @@ export default function JobExperienceForm({
           + Add Description
         </button>
       </div>
-    </form>
+    </section>
   );
 }

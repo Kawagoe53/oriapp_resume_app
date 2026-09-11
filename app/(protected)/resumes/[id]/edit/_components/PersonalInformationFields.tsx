@@ -4,16 +4,11 @@ import { FieldErrors, UseFormRegister } from "react-hook-form";
 type Props = {
   register: UseFormRegister<ResumeEditFormData>;
   errors: FieldErrors<ResumeEditFormData>;
-  isSubmitting: boolean;
 };
 
-export default function PersonalInformationForm({
-  register,
-  errors,
-  isSubmitting,
-}: Props) {
+export default function PersonalInformationFields({ register, errors }: Props) {
   return (
-    <form className="mb-8">
+    <section className="mb-8">
       <h2 className="text-xl font-bold mb-4">Personal Information</h2>
 
       <div className="space-y-4">
@@ -23,7 +18,6 @@ export default function PersonalInformationForm({
             type="text"
             {...register("fullName")}
             className="w-full border p-2"
-            disabled={isSubmitting}
           />
 
           {errors.fullName && (
@@ -37,7 +31,6 @@ export default function PersonalInformationForm({
             type="email"
             {...register("email")}
             className="w-full border p-2"
-            disabled={isSubmitting}
           />
 
           {errors.email && (
@@ -51,7 +44,6 @@ export default function PersonalInformationForm({
             type="text"
             {...register("phone")}
             className="w-full border p-2"
-            disabled={isSubmitting}
           />
 
           {errors.phone && (
@@ -65,7 +57,6 @@ export default function PersonalInformationForm({
             type="text"
             {...register("address")}
             className="w-full border p-2"
-            disabled={isSubmitting}
           />
 
           {errors.address && (
@@ -79,7 +70,6 @@ export default function PersonalInformationForm({
             type="text"
             {...register("visaInfo")}
             className="w-full border p-2"
-            disabled={isSubmitting}
           />
 
           {errors.visaInfo && (
@@ -93,7 +83,6 @@ export default function PersonalInformationForm({
             type="text"
             {...register("availability")}
             className="w-full border p-2"
-            disabled={isSubmitting}
           />
 
           {errors.availability && (
@@ -101,6 +90,6 @@ export default function PersonalInformationForm({
           )}
         </div>
       </div>
-    </form>
+    </section>
   );
 }

@@ -5,12 +5,11 @@ import { UseFormRegister } from "react-hook-form";
 
 type Props = {
   register: UseFormRegister<ResumeEditFormData>;
-  isSubmitting: boolean;
 };
 
-export default function SummaryForm({ register, isSubmitting }: Props) {
+export default function SummaryFields({ register }: Props) {
   return (
-    <form>
+    <section>
       <label htmlFor="summary" className="block mb-2 font-medium">
         Summary
       </label>
@@ -19,10 +18,9 @@ export default function SummaryForm({ register, isSubmitting }: Props) {
         id="summary"
         {...register("summary")}
         rows={6}
-        disabled={isSubmitting}
         className="w-full border rounded-md p-3"
         placeholder="Write your professional summary..."
       />
-    </form>
+    </section>
   );
 }
