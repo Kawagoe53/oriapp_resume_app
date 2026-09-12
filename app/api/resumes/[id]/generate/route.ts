@@ -1,4 +1,8 @@
 import buildError from "@/app/_libs/buildError";
+import {
+  AI_USAGE_MONTHLY_LIMIT,
+  getAiUsagePeriod,
+} from "@/app/_libs/aiUsage";
 import getUserId from "@/app/_libs/getUserId";
 import { openai } from "@/app/_libs/openai";
 import { prisma } from "@/app/_libs/prisma";
@@ -27,6 +31,21 @@ export const POST = async (
       return NextResponse.json(
         { message: "履歴書が見つかりません" },
         { status: 404 },
+      );
+    }
+
+    const { periodStart } = getAiUsagePeriod();
+    const usageCount = await prisma.aiUsage.count({
+      where: {
+        userId,
+        createdAt: { gte: periodStart },
+      },
+    });
+
+    if (usageCount >= AI_USAGE_MONTHLY_LIMIT) {
+      return NextResponse.json(
+        { message: "今月のAI生成回数の上限に達しました" },
+        { status: 429 },
       );
     }
 
@@ -170,6 +189,9 @@ export const POST = async (
             ? new Date(`${jobExperience.endDate}-01-01`)
             : null,
         })),
+      });
+      await tx.aiUsage.create({
+        data: { userId },
       });
     });
 
