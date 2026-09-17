@@ -1,3 +1,4 @@
+import { jobExperiencesUpdateSchema } from "@/app/_schemas/resumeEditSchema";
 import buildError from "@/app/_libs/buildError";
 import getUserId from "@/app/_libs/getUserId";
 import { prisma } from "@/app/_libs/prisma";
@@ -57,7 +58,15 @@ export const PUT = async (
     const userId = await getUserId(request);
 
     const body: UpdateResumeRequestBody = await request.json();
-    const { resume, jobExperiences } = body;
+    const parsedJobs = jobExperiencesUpdateSchema.safeParse(body?.jobExperiences);
+    if (!parsedJobs.success) {
+      return NextResponse.json(
+        { message: parsedJobs.error.issues[0].message },
+        { status: 400 },
+      );
+    }
+    const { resume } = body;
+    const jobExperiences = parsedJobs.data;
 
     await prisma.$transaction(async (tx) => {
       await tx.resume.update({

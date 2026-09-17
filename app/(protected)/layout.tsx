@@ -18,7 +18,7 @@ export default function ResumeLayout({
     <>
       {/* ハンバーガー */}
       <div
-        className="fixed top-4 left-4 z-50"
+        className="resume-navigation fixed top-4 left-4 z-50"
         onMouseEnter={() => setIsOpen(true)}
       >
         <button className="rounded-md bg-white p-2 shadow">☰</button>
@@ -28,7 +28,7 @@ export default function ResumeLayout({
       <aside
         onMouseLeave={() => setIsOpen(false)}
         className={`
-          fixed left-0 top-0 z-40 h-screen w-64
+          resume-navigation fixed left-0 top-0 z-40 h-screen w-64
           bg-gray-100 shadow-lg
           transition-transform duration-300
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
@@ -55,7 +55,7 @@ export default function ResumeLayout({
         </div>
       </aside>
 
-      <main className="min-h-screen bg-gray-50 pl-20 pr-8 py-2">
+      <main className="protected-content min-h-screen bg-gray-50 pl-20 pr-8 py-2">
         {children}
       </main>
     </>

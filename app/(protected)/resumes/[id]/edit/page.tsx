@@ -4,6 +4,8 @@ import useFetch from "@/app/_hooks/useFetch";
 
 import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 import {
+  MAX_JOB_EXPERIENCES,
+  MIN_JOB_EXPERIENCES,
   ResumeEditFormData,
   resumeEditSchema,
 } from "@/app/_schemas/resumeEditSchema";
@@ -11,7 +13,7 @@ import { ResumeShowResponse } from "@/app/_schemas/resumeResponseSchema";
 import { UpdateResumeRequestBody } from "@/app/_types/edit";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
 import CertificateFields from "./_components/CertificateFields";
@@ -23,6 +25,7 @@ import SummaryFields from "./_components/SummaryFields";
 
 export default function EditPage() {
   const router = useRouter();
+  const [saveError, setSaveError] = useState<string | null>(null);
   const { id } = useParams();
   const { token } = useSupabaseSession();
 
@@ -98,7 +101,9 @@ export default function EditPage() {
           }))
         : [],
 
-      jobExperiences: resume.jobExperiences.map((experience) => ({
+      jobExperiences: resume.jobExperiences.length === 0 ? [{
+        companyName: "", position: "", jobType: "", startDate: "", endDate: "", description: [],
+      }] : resume.jobExperiences.map((experience) => ({
         companyName: experience.companyName,
         position: experience.position,
         jobType: experience.jobType,
@@ -126,6 +131,7 @@ export default function EditPage() {
       return;
     }
 
+    setSaveError(null);
     try {
       const body: UpdateResumeRequestBody = {
         resume: {
@@ -172,7 +178,7 @@ export default function EditPage() {
 
       router.push(`/resumes/${id}/preview`);
     } catch (error) {
-      console.error(error);
+      setSaveError(error instanceof Error ? error.message : "履歴書の更新に失敗しました");
     }
   };
 
@@ -208,19 +214,35 @@ export default function EditPage() {
 
         <SummaryFields register={register} />
 
+        <p className="my-4 text-sm">
+          職歴は1〜3件登録してください（アルバイト経験も記入できます）。現在 {jobExperienceFields.length} 件
+        </p>
+        {jobExperienceFields.length > MAX_JOB_EXPERIENCES && (
+          <p role="alert" className="text-red-600">保存するには、残す職歴を選んで3件以内にしてください。</p>
+        )}
+        {(errors.jobExperiences?.root?.message || errors.jobExperiences?.message) && (
+          <p role="alert" className="text-red-600">{errors.jobExperiences.root?.message || errors.jobExperiences.message}</p>
+        )}
         {jobExperienceFields.map((field, index) => (
           <JobExperienceFields
             key={field.id}
             index={index}
             register={register}
             control={control}
-            onRemove={() => removeJobExperience(index)}
+            errors={errors}
+            canRemove={jobExperienceFields.length > MIN_JOB_EXPERIENCES}
+            onRemove={() => {
+              if (jobExperienceFields.length > MIN_JOB_EXPERIENCES) removeJobExperience(index);
+            }}
           />
         ))}
 
         <button
           type="button"
-          onClick={() =>
+          disabled={jobExperienceFields.length >= MAX_JOB_EXPERIENCES}
+          className="disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={() => {
+            if (jobExperienceFields.length >= MAX_JOB_EXPERIENCES) return;
             appendJobExperience({
               companyName: "",
               position: "",
@@ -228,14 +250,15 @@ export default function EditPage() {
               startDate: "",
               endDate: "",
               description: [],
-            })
-          }
+            });
+          }}
         >
           + Add Job Experience
         </button>
 
         <EducationFields register={register} errors={errors} />
 
+        {saveError && <p role="alert" className="text-red-600">{saveError}</p>}
         <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "保存中..." : "保存"}
         </button>
