@@ -121,10 +121,152 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }
+}
+
+/* Keep the same physical dimensions and typography on screen and in print. */
+.resume-preview {
+  padding: 32px 0;
+  background: #f3f4f6;
+  overflow-x: auto;
+}
+
+.resume-toolbar {
+  width: 210mm;
+  margin: 0 auto 16px;
+}
+
+.resume-paper {
+  box-sizing: border-box;
+  width: 210mm;
+  height: 297mm;
+  padding: 20mm;
+  margin: 0 auto;
+  background: white;
+  color: black;
+  box-shadow: 0 4px 16px #0002;
+}
+
+.resume-page-area {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.resume-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flow-root;
+  transform-origin: top left;
+  overflow-wrap: anywhere;
+}
+
+.resume-content[data-compact] header {
+  margin-bottom: 16px;
+}
+
+.resume-content[data-compact] h2 {
+  margin-bottom: 4px;
+}
+
+.resume-content[data-compact] p {
+  margin-bottom: 4px;
+}
+
+.resume-content[data-compact] .leading-6 {
+  line-height: 1.35;
+}
+
+.resume-content[data-compact] .border-dashed {
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+@page resume {
+  size: A4 portrait;
+  margin: 0;
+}
+
+@media print {
+
+  html:has(.resume-preview),
+  body:has(.resume-preview) {
+    margin: 0;
+    padding: 0;
+    height: auto;
+    min-height: 0;
+    display: block;
+    background: white;
+  }
+
+  body:has(.resume-preview) .resume-navigation {
+    display: none !important;
+  }
+
+  body:has(.resume-preview) .protected-content {
+    margin: 0;
+    padding: 0;
+    min-height: 0;
+    background: white;
+  }
+
+  .resume-preview {
+    padding: 0;
+    background: white;
+    overflow: visible;
+  }
+
+  .resume-toolbar {
+    display: none !important;
+  }
+
+  .resume-paper {
+    page: resume;
+    margin: 0;
+    box-shadow: none;
+    break-inside: avoid;
+    /* The content is measured and fitted first. Clip only layout overflow from
+       the original, untransformed box so it cannot create extra print pages. */
+    overflow: clip;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
+/* A consistent divider and restrained spacing also suit a single work entry. */
+.resume-job:last-child {
+  border-bottom: 0;
+  margin-bottom: 0;
+}
+
+.resume-content[data-job-count="1"] .resume-job {
+  padding-top: 4px;
+}
+
+.resume-content[data-job-count="2"] .resume-job {
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+}
+
+.resume-content[data-job-count="3"] .resume-job {
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+}
+
+.resume-content[data-compact] .resume-job {
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+.resume-content .resume-job:last-child {
+  margin-bottom: 0;
 }
