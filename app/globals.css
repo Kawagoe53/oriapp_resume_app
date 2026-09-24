@@ -1,30 +1,148 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  html {
+    @apply font-sans;
+  }
+}
+
 /* Keep the same physical dimensions and typography on screen and in print. */
 .resume-preview {
   padding: 32px 0;
   background: #f3f4f6;
   overflow-x: auto;
 }
-.resume-toolbar { width: 210mm; margin: 0 auto 16px; }
+
+.resume-toolbar {
+  width: 210mm;
+  margin: 0 auto 16px;
+}
+
 .resume-paper {
   box-sizing: border-box;
   width: 210mm;
@@ -35,7 +153,13 @@ body {
   color: black;
   box-shadow: 0 4px 16px #0002;
 }
-.resume-page-area { position: relative; width: 100%; height: 100%; }
+
+.resume-page-area {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
 .resume-content {
   position: absolute;
   top: 0;
@@ -45,15 +169,35 @@ body {
   transform-origin: top left;
   overflow-wrap: anywhere;
 }
-.resume-content[data-compact] header { margin-bottom: 16px; }
-.resume-content[data-compact] h2 { margin-bottom: 4px; }
-.resume-content[data-compact] p { margin-bottom: 4px; }
-.resume-content[data-compact] .leading-6 { line-height: 1.35; }
-.resume-content[data-compact] .border-dashed { padding-bottom: 8px; margin-bottom: 8px; }
 
-@page resume { size: A4 portrait; margin: 0; }
+.resume-content[data-compact] header {
+  margin-bottom: 16px;
+}
+
+.resume-content[data-compact] h2 {
+  margin-bottom: 4px;
+}
+
+.resume-content[data-compact] p {
+  margin-bottom: 4px;
+}
+
+.resume-content[data-compact] .leading-6 {
+  line-height: 1.35;
+}
+
+.resume-content[data-compact] .border-dashed {
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+@page resume {
+  size: A4 portrait;
+  margin: 0;
+}
 
 @media print {
+
   html:has(.resume-preview),
   body:has(.resume-preview) {
     margin: 0;
@@ -63,15 +207,28 @@ body {
     display: block;
     background: white;
   }
-  body:has(.resume-preview) .resume-navigation { display: none !important; }
+
+  body:has(.resume-preview) .resume-navigation {
+    display: none !important;
+  }
+
   body:has(.resume-preview) .protected-content {
     margin: 0;
     padding: 0;
     min-height: 0;
     background: white;
   }
-  .resume-preview { padding: 0; background: white; overflow: visible; }
-  .resume-toolbar { display: none !important; }
+
+  .resume-preview {
+    padding: 0;
+    background: white;
+    overflow: visible;
+  }
+
+  .resume-toolbar {
+    display: none !important;
+  }
+
   .resume-paper {
     page: resume;
     margin: 0;
@@ -86,9 +243,30 @@ body {
 }
 
 /* A consistent divider and restrained spacing also suit a single work entry. */
-.resume-job:last-child { border-bottom: 0; margin-bottom: 0; }
-.resume-content[data-job-count="1"] .resume-job { padding-top: 4px; }
-.resume-content[data-job-count="2"] .resume-job { padding-bottom: 24px; margin-bottom: 24px; }
-.resume-content[data-job-count="3"] .resume-job { padding-bottom: 16px; margin-bottom: 16px; }
-.resume-content[data-compact] .resume-job { padding-bottom: 8px; margin-bottom: 8px; }
-.resume-content .resume-job:last-child { margin-bottom: 0; }
+.resume-job:last-child {
+  border-bottom: 0;
+  margin-bottom: 0;
+}
+
+.resume-content[data-job-count="1"] .resume-job {
+  padding-top: 4px;
+}
+
+.resume-content[data-job-count="2"] .resume-job {
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+}
+
+.resume-content[data-job-count="3"] .resume-job {
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+}
+
+.resume-content[data-compact] .resume-job {
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+.resume-content .resume-job:last-child {
+  margin-bottom: 0;
+}

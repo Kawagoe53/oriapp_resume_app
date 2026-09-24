@@ -2,10 +2,13 @@
 
 import useFetch from "@/app/_hooks/useFetch";
 import { AiUsageResponse } from "@/app/api/ai-usage/route";
+import { Calendar } from "@/components/ui/calendar";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function AiUsagePage() {
   const { data, error, isLoading } = useFetch<AiUsageResponse>("/api/ai-usage");
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
 
   if (isLoading) {
     return <div className="mx-auto max-w-3xl p-8">読み込み中...</div>;
@@ -26,11 +29,15 @@ export default function AiUsagePage() {
     day: "numeric",
   });
 
+  const createdDates = data.createdDates.map((date) => new Date(date));
+
   return (
     <div className="mx-auto max-w-3xl py-10">
       <div className="rounded-2xl bg-white p-8 shadow-sm">
         <p className="text-sm font-medium text-blue-600">AI 使用状況</p>
-        <h1 className="mt-2 text-2xl font-bold text-gray-900">今月のAI生成回数</h1>
+        <h1 className="mt-2 text-2xl font-bold text-gray-900">
+          今月のAI生成回数
+        </h1>
         <p className="mt-2 text-sm text-gray-600">
           履歴書のAI生成は、毎月 {data.limit} 回までご利用いただけます。
         </p>
@@ -38,9 +45,14 @@ export default function AiUsagePage() {
         <div className="mt-8 rounded-xl bg-blue-50 p-6">
           <div className="flex items-end justify-between gap-4">
             <p className="text-lg font-semibold text-gray-900">
-              {data.used} <span className="text-sm font-normal text-gray-600">/ {data.limit} 回使用</span>
+              {data.used}{" "}
+              <span className="text-sm font-normal text-gray-600">
+                / {data.limit} 回使用
+              </span>
             </p>
-            <p className={`text-sm font-semibold ${isLimitReached ? "text-red-600" : "text-blue-700"}`}>
+            <p
+              className={`text-sm font-semibold ${isLimitReached ? "text-red-600" : "text-blue-700"}`}
+            >
               残り {data.remaining} 回
             </p>
           </div>
@@ -55,6 +67,27 @@ export default function AiUsagePage() {
         <div className="mt-6 rounded-xl border border-gray-200 p-5 text-sm text-gray-600">
           <p className="font-medium text-gray-900">次回のリセット</p>
           <p className="mt-1">{resetDate} に使用回数がリセットされます。</p>
+        </div>
+
+        <div className="mt-6 rounded-xl border border-gray-200 p-5">
+          <p className="font-medium text-gray-900">作成した履歴書</p>
+          <p className="mt-1 text-sm text-gray-600">
+            日付を選択すると、その日に作成した履歴書を確認できます。
+          </p>
+
+          <Calendar
+            mode="single"
+            selected={selectedDate}
+            onSelect={setSelectedDate}
+            className="mt-4 rounded-lg border"
+            captionLayout="dropdown"
+            modifiers={{
+              created: createdDates,
+            }}
+            modifiersClassNames={{
+              created: "bg-blue-100 text-blue-700 font-semibold",
+            }}
+          />
         </div>
 
         {isLimitReached ? (
