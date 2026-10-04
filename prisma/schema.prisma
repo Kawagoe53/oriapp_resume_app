@@ -110,7 +110,7 @@ model JobExperience {
   id          String   @id @default(uuid())
 
   resumeId    String   @map("resume_id")
-  resume      Resume   @relation(fields: [resumeId], references: [id])
+  resume      Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
 
   companyName String   @map("company_name")
   position    String
@@ -129,7 +129,7 @@ model JobExperience {
 model ChatMessage {
   id          String   @id @default(uuid())
   resumeId    String   @map("resume_id")
-  resume      Resume   @relation(fields: [resumeId], references: [id])
+  resume      Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   role        ChatRole 
   content     Json
   stepNumber  Int      @map("step_number")

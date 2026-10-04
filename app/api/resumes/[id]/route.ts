@@ -110,15 +110,23 @@ export const DELETE = async (
     const { id } = await params;
     const userId = await getUserId(request);
 
-    await prisma.resume.delete({
+    const { count } = await prisma.resume.deleteMany({
       where: {
         id,
         userId,
       },
     });
 
+    if (count === 0) {
+      return NextResponse.json({ message: "履歴書が見つかりません。" }, { status: 404 });
+    }
+
     return NextResponse.json({ message: "削除しました" }, { status: 200 });
   } catch (error) {
-    return buildError(error);
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return buildError(error);
+    }
+    console.error("Failed to delete resume", error);
+    return NextResponse.json({ message: "履歴書の削除に失敗しました。" }, { status: 500 });
   }
 };

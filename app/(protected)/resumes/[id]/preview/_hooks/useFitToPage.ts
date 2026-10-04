@@ -8,19 +8,17 @@ export function useFitToPage(content: unknown) {
   const [result, setResult] = useState({ content, ready: false, scale: 1 });
 
   const fit = useCallback(() => {
-    const page = pageRef.current; //pageRefが指しているA4のdivをpageという変数に入れる
-    const element = contentRef.current; //Resume本体
+    const page = pageRef.current; //A4の紙の大きさを表すDOM
+    const element = contentRef.current; //Resume本体の大きさを表すDOM
     if (!page || !element) return; //どちらかのDOMがまだ取れていないなら、今回はfit()を終了
 
-    //前回のサイズ計算があるかもなんで一度「元のサイズ」に戻す
     element.style.transform = "none";
     element.style.width = "100%";
-    element.removeAttribute("data-compact"); //まず余白などをコンパクトにして入らないか試す
+    element.removeAttribute("data-compact");
+    //前回のサイズ計算があるかもなんで一度「元のサイズ」に戻す
     const available = page.clientHeight - 2;
     // A4の高さから2px引いた値をavailableに入れる/A4の「使える高さ」を取得
     //印刷時の小数点・丸め誤差などでギリギリはみ出すのを防ぐため、2pxだけ安全マージンを取っている
-
-    //ここまでがまずResume本来のサイズを正しく測って、はみ出しているならコンパクト表示にする
 
     if (element.scrollHeight > available) element.dataset.compact = "true"; //A4の高さをResumeの高さが超えていた場合はdata-compact属性をtrueにすることで、余白などをコンパクトにして入るか試す
     let scale = 1; //「A4に収まるなら、そのまま100%で使う」という初期値
