@@ -1,13 +1,11 @@
 "use client";
 
 import useDeleteResume from "@/app/_hooks/useDeleteResume";
-import useFetch from "@/app/_hooks/useFetch";
-import { ResumesIndexResponse } from "@/app/api/resumes/route";
+import useResumes from "@/app/_hooks/useResumes";
 import Link from "next/link";
 
 export default function GetResumes() {
-  const { data, error, isLoading } =
-    useFetch<ResumesIndexResponse>("/api/resumes");
+  const { data, error, isLoading } = useResumes();
 
   const { deleteResume, deletingId, deleteError } = useDeleteResume();
 
@@ -35,14 +33,21 @@ export default function GetResumes() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      {deleteError && <p role="alert" className="mb-4 text-red-600">{deleteError}</p>}
+      {deleteError && (
+        <p role="alert" className="mb-4 text-red-600">
+          {deleteError}
+        </p>
+      )}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
         {resumes.map((resume) => (
           <div
             key={resume.id}
             className="flex h-72 flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
           >
-            <Link href={`/resumes/${resume.id}/chat`} className="flex min-h-0 flex-1 flex-col rounded focus-visible:outline-2 focus-visible:outline-blue-600">
+            <Link
+              href={`/resumes/${resume.id}/chat`}
+              className="flex min-h-0 flex-1 flex-col rounded focus-visible:outline-2 focus-visible:outline-blue-600"
+            >
               <div className="mb-4 text-5xl">📄</div>
 
               <h2 className="text-lg font-bold text-gray-900">

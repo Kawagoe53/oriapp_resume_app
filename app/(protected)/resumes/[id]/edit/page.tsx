@@ -274,7 +274,8 @@ export default function EditPage() {
             className="rounded border border-red-300 px-4 py-2 text-red-600 hover:bg-red-50 focus-visible:outline-2 focus-visible:outline-red-600 disabled:cursor-not-allowed disabled:opacity-50"
             onClick={async () => {
               if (isSubmitting || isDeleting) return;
-              if (await deleteResume(id, resumeResponse.resume.title)) {
+              const isDeleted = await deleteResume(id, resumeResponse.resume.title);
+              if (isDeleted) {
                 setDeleted(true);
                 router.replace("/resumes");
               }
