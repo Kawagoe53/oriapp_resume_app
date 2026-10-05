@@ -1,5 +1,6 @@
 "use client";
 
+import useDeleteResume from "@/app/_hooks/useDeleteResume";
 import useFetch from "@/app/_hooks/useFetch";
 
 import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
@@ -26,7 +27,10 @@ import SummaryFields from "./_components/SummaryFields";
 export default function EditPage() {
   const router = useRouter();
   const [saveError, setSaveError] = useState<string | null>(null);
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
+  const { deleteResume, deletingId, deleteError } = useDeleteResume();
+  const [deleted, setDeleted] = useState(false);
+  const isDeleting = deletingId !== null || deleted;
   const { token } = useSupabaseSession();
 
   const {
@@ -121,7 +125,7 @@ export default function EditPage() {
   }, [resumeResponse, reset]);
 
   const onSubmit = async (data: ResumeEditFormData) => {
-    if (!token) {
+    if (!token || isDeleting) {
       return;
     }
 
@@ -192,7 +196,7 @@ export default function EditPage() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <fieldset disabled={isSubmitting}>
+      <fieldset disabled={isSubmitting || isDeleting}>
         <h1>履歴書編集</h1>
         <PersonalInformationFields register={register} errors={errors} />
 
@@ -262,6 +266,24 @@ export default function EditPage() {
         <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "保存中..." : "保存"}
         </button>
+        <div className="mt-8 border-t border-gray-200 pt-4">
+          {deleteError && <p role="alert" className="mb-2 text-red-600">{deleteError}</p>}
+          <button
+            type="button"
+            disabled={isSubmitting || isDeleting}
+            className="rounded border border-red-300 px-4 py-2 text-red-600 hover:bg-red-50 focus-visible:outline-2 focus-visible:outline-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={async () => {
+              if (isSubmitting || isDeleting) return;
+              const isDeleted = await deleteResume(id, resumeResponse.resume.title);
+              if (isDeleted) {
+                setDeleted(true);
+                router.replace("/resumes");
+              }
+            }}
+          >
+            {isDeleting ? "削除中…" : "この履歴書を削除"}
+          </button>
+        </div>
       </fieldset>
     </form>
   );
