@@ -1,3 +1,5 @@
+import { isResumeAnswered } from "@/app/_libs/resumeProgress";
+import { ResumeStatus } from "@/app/generated/prisma/enums";
 import buildError from "@/app/_libs/buildError";
 import {
   AI_USAGE_MONTHLY_LIMIT,
@@ -19,139 +21,153 @@ export const POST = async (
     // ① ユーザー確認
     const userId = await getUserId(request);
 
-    // ② Resume確認
-    const resume = await prisma.resume.findFirst({
-      where: {
-        id,
-        userId,
-      },
-    });
-
-    if (!resume) {
-      return NextResponse.json(
-        { message: "履歴書が見つかりません" },
-        { status: 404 },
-      );
-    }
-
-    const { periodStart } = getAiUsagePeriod();
-    const usageCount = await prisma.aiUsage.count({
-      where: {
-        userId,
-        createdAt: { gte: periodStart },
-      },
-    });
-
-    if (usageCount >= AI_USAGE_MONTHLY_LIMIT) {
-      return NextResponse.json(
-        { message: "今月のAI生成回数の上限に達しました" },
-        { status: 429 },
-      );
-    }
-
-    // ③ ChatMessage取得
-    const chatMessages = await prisma.chatMessage.findMany({
-      where: {
-        resumeId: id,
-      },
-      orderBy: {
-        createdAt: "asc",
-      },
-    });
-    // ④ 質問・回答に整理
-    const forPromptQuestionAnswer = chatMessages
-      .filter((chatMessage) => chatMessage.role === "ASSISTANT")
-      .map((question) => {
-        const answer = chatMessages.find(
-          (chatMessage) =>
-            chatMessage.role === "USER" &&
-            chatMessage.stepNumber === question.stepNumber,
-        );
-
-        if (!answer) {
-          throw new Error("回答が見つかりません");
-        }
-
-        return {
-          stepNumber: question.stepNumber,
-          question: question.content,
-          answer: answer.content,
-        };
+    // Keep the user lock until generation and persistence finish, including usage accounting.
+    return await prisma.$transaction(async (tx) => {
+      const [lock] = await tx.$queryRaw<{ acquired: boolean }[]>`
+        SELECT pg_try_advisory_xact_lock(hashtextextended(${`resume-generation:${userId}`}, 0)) AS acquired
+      `;
+      if (!lock.acquired) {
+        return NextResponse.json({ message: "履歴書を生成中です。しばらく待ってから開き直してください。" }, { status: 409 });
+      }
+      // ② Resume確認
+      const resume = await tx.resume.findFirst({
+        where: {
+          id,
+          userId,
+        },
       });
 
-    // ⑤ プロンプト作成
-    const prompt = `
-  あなたは、オーストラリアで使用する英文Resumeを作成する専門家です。
-
-  以下の質問とユーザーの回答をもとに、Resumeに保存するデータを作成してください。
-
-  【ルール】
-  - 日本語の回答は自然な英語に変換してください
-  - オーストラリアのResumeに適した表現にしてください
-  - ユーザーが回答していない情報を推測して追加しないでください
-  - 情報がない項目はnullにしてください
-  - skills、certificate、jobExperiencesに該当する情報がない場合はnullではなく空配列[]を返してください
-  - skills、certificate、jobExperiencesは必ず配列で返してください
-  - startDateとendDateはYYYY形式（年のみ）で返してください
-  - 現在も勤務中の場合、endDateはnullにしてください
-
-  - summaryは、ユーザーの回答に含まれる職歴・スキル・人物特性などの情報から作成してください
-  - Summaryを作成できる情報が1つでもある場合は、簡潔な英文Summaryを生成してください
-  - Summaryを作成するための情報が全くない場合のみnullにしてください
-  - ユーザーが回答していない具体的な経験・スキル・資格などを推測して追加しないでください
-
-  以下のJSON形式で返してください。
-
-  {
-    "fullName": string | null,
-    "email": string | null,
-    "phone": string | null,
-    "address": string | null,
-    "summary": string | null,
-    "skills": string[],
-    "certificate": string[],
-    "visaInfo": string | null,
-    "availability": string | null,
-    "educationSchool": string | null,
-    "educationMajor": string | null,
-    "educationYear": number | null,
-    "jobExperiences": [
-      {
-        "companyName": string,
-        "position": string,
-        "jobType": string,
-        "description": string[],
-        "startDate": string,
-        "endDate": string | null
+      if (!resume) {
+        return NextResponse.json(
+          { message: "履歴書が見つかりません" },
+          { status: 404 },
+        );
       }
-    ]
-  }
 
-  【質問と回答】
-  ${forPromptQuestionAnswer
-    .map(
-      ({ question, answer }) => `
-  質問: ${question}
-  回答: ${answer ?? "未回答"}
-  `,
-    )
-    .join("\n")}
-  `;
-    // ⑥ AI呼び出し
-    const response = await openai.responses.parse({
-      model: "gpt-5.4-mini",
-      input: prompt,
-      text: {
-        format: zodTextFormat(generatedResumeSchema, "generated_resume"),
-      },
-    });
+      if (resume.status === ResumeStatus.COMPLETED) {
+        return NextResponse.json({ message: "作成済みの履歴書です" }, { status: 200 });
+      }
 
-    const generatedResume = response.output_parsed;
-    if (!generatedResume) {
-      throw new Error("履歴書データの生成に失敗しました");
+      const { periodStart } = getAiUsagePeriod();
+      const usageCount = await tx.aiUsage.count({
+        where: {
+          userId,
+          createdAt: { gte: periodStart },
+        },
+      });
+
+      if (usageCount >= AI_USAGE_MONTHLY_LIMIT) {
+        return NextResponse.json(
+          { message: "今月のAI生成回数の上限に達しました" },
+          { status: 429 },
+        );
+      }
+
+      // ③ ChatMessage取得
+      const chatMessages = await tx.chatMessage.findMany({
+        where: {
+          resumeId: id,
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+      });
+      if (!isResumeAnswered(chatMessages)) {
+        return NextResponse.json({ message: "すべての質問に回答してから生成してください。" }, { status: 400 });
+      }
+      // ④ 質問・回答に整理
+      const forPromptQuestionAnswer = chatMessages
+        .filter((chatMessage) => chatMessage.role === "ASSISTANT")
+        .map((question) => {
+          const answer = chatMessages.find(
+            (chatMessage) =>
+              chatMessage.role === "USER" &&
+              chatMessage.stepNumber === question.stepNumber,
+          );
+
+          if (!answer) {
+            throw new Error("回答が見つかりません");
+          }
+
+          return {
+            stepNumber: question.stepNumber,
+            question: question.content,
+            answer: answer.content,
+          };
+        });
+
+      // ⑤ プロンプト作成
+      const prompt = `
+    あなたは、オーストラリアで使用する英文Resumeを作成する専門家です。
+
+    以下の質問とユーザーの回答をもとに、Resumeに保存するデータを作成してください。
+
+    【ルール】
+    - 日本語の回答は自然な英語に変換してください
+    - オーストラリアのResumeに適した表現にしてください
+    - ユーザーが回答していない情報を推測して追加しないでください
+    - 情報がない項目はnullにしてください
+    - skills、certificate、jobExperiencesに該当する情報がない場合はnullではなく空配列[]を返してください
+    - skills、certificate、jobExperiencesは必ず配列で返してください
+    - startDateとendDateはYYYY形式（年のみ）で返してください
+    - 現在も勤務中の場合、endDateはnullにしてください
+
+    - summaryは、ユーザーの回答に含まれる職歴・スキル・人物特性などの情報から作成してください
+    - Summaryを作成できる情報が1つでもある場合は、簡潔な英文Summaryを生成してください
+    - Summaryを作成するための情報が全くない場合のみnullにしてください
+    - ユーザーが回答していない具体的な経験・スキル・資格などを推測して追加しないでください
+
+    以下のJSON形式で返してください。
+
+    {
+      "fullName": string | null,
+      "email": string | null,
+      "phone": string | null,
+      "address": string | null,
+      "summary": string | null,
+      "skills": string[],
+      "certificate": string[],
+      "visaInfo": string | null,
+      "availability": string | null,
+      "educationSchool": string | null,
+      "educationMajor": string | null,
+      "educationYear": number | null,
+      "jobExperiences": [
+        {
+          "companyName": string,
+          "position": string,
+          "jobType": string,
+          "description": string[],
+          "startDate": string,
+          "endDate": string | null
+        }
+      ]
     }
 
-    await prisma.$transaction(async (tx) => {
+    【質問と回答】
+    ${forPromptQuestionAnswer
+      .map(
+        ({ question, answer }) => `
+    質問: ${question}
+    回答: ${answer ?? "未回答"}
+    `,
+      )
+      .join("\n")}
+    `;
+      // ⑥ AI呼び出し
+      const response = await openai.responses.parse({
+        model: "gpt-5.4-mini",
+        input: prompt,
+        text: {
+          format: zodTextFormat(generatedResumeSchema, "generated_resume"),
+        },
+      }, { timeout: 120_000, maxRetries: 0 });
+
+      const generatedResume = response.output_parsed;
+      if (!generatedResume) {
+        throw new Error("履歴書データの生成に失敗しました");
+      }
+
       await tx.jobExperience.deleteMany({
         where: {
           resumeId: id,
@@ -161,8 +177,10 @@ export const POST = async (
       await tx.resume.update({
         where: {
           id,
+          userId,
         },
         data: {
+          status: ResumeStatus.COMPLETED,
           fullName: generatedResume.fullName,
           email: generatedResume.email,
           phone: generatedResume.phone,
@@ -193,12 +211,12 @@ export const POST = async (
       await tx.aiUsage.create({
         data: { userId },
       });
-    });
 
-    return NextResponse.json(
-      { message: "Resumeを生成しました" },
-      { status: 200 },
-    );
+      return NextResponse.json(
+        { message: "Resumeを生成しました" },
+        { status: 200 },
+      );
+    }, { timeout: 150_000, maxWait: 5_000 });
   } catch (error) {
     return buildError(error);
   }

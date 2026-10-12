@@ -3,7 +3,7 @@
 import useFetch from "@/app/_hooks/useFetch";
 import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 import { CreateChatMessageRequestBody } from "@/app/_types/chat";
-import { ChatRole } from "@/app/generated/prisma/enums";
+import { ChatRole, ResumeStatus } from "@/app/generated/prisma/enums";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -13,6 +13,8 @@ import { chatSchema, ChatSchemaValues } from "./chatSchema";
 import ChatMessage from "./components/ChatMessage";
 
 type MessagesShowResponse = {
+  isAnswered: boolean;
+  status: ResumeStatus;
   chatMessages: {
     id: string;
     role: ChatRole;
@@ -25,7 +27,7 @@ export default function ResumeChatPage() {
   const { token } = useSupabaseSession();
   const params = useParams();
   const resumeId = params.id;
-  const [isCompleted, setIsCompleted] = useState(false);
+
   const [submitError, setSubmitError] = useState<string | null>(null);
   const router = useRouter();
   const {
@@ -42,7 +44,7 @@ export default function ResumeChatPage() {
   } = useFetch<MessagesShowResponse>(`/api/resumes/${resumeId}/chat`);
 
   const onSubmit = async (data: ChatSchemaValues) => {
-    if (!token) {
+    if (!token || chatData?.isAnswered || chatData?.status === ResumeStatus.COMPLETED) {
       return;
     }
 
@@ -66,10 +68,7 @@ export default function ResumeChatPage() {
       }
 
       const result = await res.json();
-      if (result.isCompleted) {
-        setIsCompleted(true);
-      }
-      mutate();
+      await mutate((current) => current ? { ...current, isAnswered: result.isAnswered } : current);
       reset();
     } catch (err) {
       setSubmitError(
@@ -113,6 +112,7 @@ export default function ResumeChatPage() {
       <footer className="border-t p-4">
         <form onSubmit={handleSubmit(onSubmit)} className="flex gap-2">
           <input
+            disabled={isSubmitting || chatData.isAnswered || chatData.status === ResumeStatus.COMPLETED}
             className="flex-1 rounded border px-3 py-2"
             type="text"
             placeholder="メッセージを入力..."
@@ -120,9 +120,11 @@ export default function ResumeChatPage() {
           />
           {errors.message && <p>{errors.message.message}</p>}
           {submitError && <p className="text-red-500">{submitError}</p>}
-          {isCompleted ? (
+          {chatData.status === ResumeStatus.COMPLETED ? (
+            <Link href={`/resumes/${resumeId}/preview`}>プレビューを見る</Link>
+          ) : chatData.isAnswered ? (
             <button type="button" onClick={handleGenerate}>
-              Resume作成
+              履歴書を生成する
             </button>
           ) : (
             <button type="submit" disabled={isSubmitting}>
