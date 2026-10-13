@@ -1,10 +1,13 @@
 import { questions } from "@/app/_constants/questions";
-import { isResumeAnswered } from "@/app/_libs/resumeProgress";
-import { ResumeStatus } from "@/app/generated/prisma/enums";
 import buildError from "@/app/_libs/buildError";
 import getUserId from "@/app/_libs/getUserId";
 import { prisma } from "@/app/_libs/prisma";
-import { CreateChatMessageRequestBody } from "@/app/_types/chat";
+import { isResumeAnswered } from "@/app/_libs/resumeProgress";
+import {
+  CreateChatMessageRequestBody,
+  MessagesShowResponse,
+} from "@/app/_types/chat";
+import { ResumeStatus } from "@/app/generated/prisma/enums";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (
@@ -31,17 +34,39 @@ export const POST = async (
       }
 
       const chatMessages = await tx.chatMessage.findMany({
-        where: { resumeId: id }, orderBy: { createdAt: "asc" },
+        where: { resumeId: id },
+        orderBy: { createdAt: "asc" },
       });
-      if (resume.status === ResumeStatus.COMPLETED || isResumeAnswered(chatMessages)) {
-        return NextResponse.json({ message: "質問への回答は完了しています。" }, { status: 409 });
+      if (
+        resume.status === ResumeStatus.COMPLETED ||
+        isResumeAnswered(chatMessages)
+      ) {
+        return NextResponse.json(
+          { message: "質問への回答は完了しています。" },
+          { status: 409 },
+        );
       }
       if (typeof content !== "string" || !content.trim()) {
-        return NextResponse.json({ message: "回答を入力してください。" }, { status: 400 });
+        return NextResponse.json(
+          { message: "回答を入力してください。" },
+          { status: 400 },
+        );
       }
-      const latestQuestion = chatMessages.filter((message) => message.role === "ASSISTANT").at(-1);
-      if (latestQuestion && chatMessages.some((message) => message.role === "USER" && message.stepNumber === latestQuestion.stepNumber)) {
-        return NextResponse.json({ message: "この質問には回答済みです。" }, { status: 409 });
+      const latestQuestion = chatMessages
+        .filter((message) => message.role === "ASSISTANT")
+        .at(-1);
+      if (
+        latestQuestion &&
+        chatMessages.some(
+          (message) =>
+            message.role === "USER" &&
+            message.stepNumber === latestQuestion.stepNumber,
+        )
+      ) {
+        return NextResponse.json(
+          { message: "この質問には回答済みです。" },
+          { status: 409 },
+        );
       }
 
       if (!latestQuestion) {
@@ -132,7 +157,14 @@ export const GET = async (
       },
     });
 
-    return NextResponse.json({ chatMessages, isAnswered: isResumeAnswered(chatMessages), status: resume.status }, { status: 200 });
+    return NextResponse.json<MessagesShowResponse>(
+      {
+        chatMessages,
+        isAnswered: isResumeAnswered(chatMessages),
+        status: resume.status,
+      },
+      { status: 200 },
+    );
   } catch (error) {
     return buildError(error);
   }

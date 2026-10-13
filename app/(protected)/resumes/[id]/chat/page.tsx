@@ -2,8 +2,8 @@
 
 import useFetch from "@/app/_hooks/useFetch";
 import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
-import { CreateChatMessageRequestBody } from "@/app/_types/chat";
-import { ChatRole, ResumeStatus } from "@/app/generated/prisma/enums";
+import type { CreateChatMessageRequestBody, MessagesShowResponse } from "@/app/_types/chat";
+import { ResumeStatus } from "@/app/generated/prisma/enums";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -11,17 +11,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { chatSchema, ChatSchemaValues } from "./chatSchema";
 import ChatMessage from "./components/ChatMessage";
-
-type MessagesShowResponse = {
-  isAnswered: boolean;
-  status: ResumeStatus;
-  chatMessages: {
-    id: string;
-    role: ChatRole;
-    content: string;
-    stepNumber: number;
-  }[];
-};
 
 export default function ResumeChatPage() {
   const { token } = useSupabaseSession();

@@ -131,7 +131,7 @@ model ChatMessage {
   resumeId    String   @map("resume_id")
   resume      Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   role        ChatRole 
-  content     Json
+  content     String
   stepNumber  Int      @map("step_number")
 
   createdAt   DateTime @default(now()) @map("created_at")
