@@ -138,6 +138,7 @@ model ChatMessage {
   updatedAt   DateTime @updatedAt @map("updated_at")
 
   @@map("chat_messages")
+  @@unique([resumeId, role, stepNumber])
 }
 
 enum ChatRole {

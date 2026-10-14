@@ -7,6 +7,7 @@ import {
   CreateChatMessageRequestBody,
   MessagesShowResponse,
 } from "@/app/_types/chat";
+import { Prisma } from "@/app/generated/prisma/client";
 import { ResumeStatus } from "@/app/generated/prisma/enums";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -20,7 +21,6 @@ export const POST = async (
     const body: CreateChatMessageRequestBody = await request.json();
     const { content } = body;
     return await prisma.$transaction(async (tx) => {
-      await tx.$queryRaw`SELECT id FROM resumes WHERE id = ${id} AND user_id = ${userId} FOR UPDATE`;
       const resume = await tx.resume.findFirst({
         where: {
           id,
@@ -121,6 +121,19 @@ export const POST = async (
       );
     });
   } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return NextResponse.json(
+        {
+          message:
+            "回答はすでに送信されています。チャットを再読み込みしてください。",
+        },
+        { status: 409 },
+      );
+    }
+
     console.error("POST submit error:", error);
     return buildError(error);
   }
