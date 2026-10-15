@@ -2,7 +2,13 @@ import { questions } from "@/app/_constants/questions";
 import buildError from "@/app/_libs/buildError";
 import getUserId from "@/app/_libs/getUserId";
 import { prisma } from "@/app/_libs/prisma";
-import { CreateChatMessageRequestBody } from "@/app/_types/chat";
+import { isResumeAnswered } from "@/app/_libs/resumeProgress";
+import {
+  CreateChatMessageRequestBody,
+  MessagesShowResponse,
+} from "@/app/_types/chat";
+import { Prisma } from "@/app/generated/prisma/client";
+import { ResumeStatus } from "@/app/generated/prisma/enums";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (
@@ -14,79 +20,120 @@ export const POST = async (
     const userId = await getUserId(request);
     const body: CreateChatMessageRequestBody = await request.json();
     const { content } = body;
-    const resume = await prisma.resume.findFirst({
-      where: {
-        id,
-        userId,
-      },
-    });
-    if (!resume) {
-      return new NextResponse(null, {
-        status: 404,
+    return await prisma.$transaction(async (tx) => {
+      const resume = await tx.resume.findFirst({
+        where: {
+          id,
+          userId,
+        },
       });
-    }
+      if (!resume) {
+        return new NextResponse(null, {
+          status: 404,
+        });
+      }
 
-    const latestQuestion = await prisma.chatMessage.findFirst({
-      where: {
-        resumeId: id,
-        role: "ASSISTANT",
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+      const chatMessages = await tx.chatMessage.findMany({
+        where: { resumeId: id },
+        orderBy: { createdAt: "asc" },
+      });
+      if (
+        resume.status === ResumeStatus.COMPLETED ||
+        isResumeAnswered(chatMessages)
+      ) {
+        return NextResponse.json(
+          { message: "質問への回答は完了しています。" },
+          { status: 409 },
+        );
+      }
+      if (typeof content !== "string" || !content.trim()) {
+        return NextResponse.json(
+          { message: "回答を入力してください。" },
+          { status: 400 },
+        );
+      }
+      const latestQuestion = chatMessages
+        .filter((message) => message.role === "ASSISTANT")
+        .at(-1);
+      if (
+        latestQuestion &&
+        chatMessages.some(
+          (message) =>
+            message.role === "USER" &&
+            message.stepNumber === latestQuestion.stepNumber,
+        )
+      ) {
+        return NextResponse.json(
+          { message: "この質問には回答済みです。" },
+          { status: 409 },
+        );
+      }
 
-    if (!latestQuestion) {
-      return NextResponse.json(
-        { message: "現在の質問が見つかりません。" },
-        { status: 400 },
+      if (!latestQuestion) {
+        return NextResponse.json(
+          { message: "現在の質問が見つかりません。" },
+          { status: 400 },
+        );
+      }
+      const answerMessage = await tx.chatMessage.create({
+        data: {
+          resumeId: id,
+          role: "USER",
+          content,
+          stepNumber: latestQuestion.stepNumber,
+        },
+      });
+
+      const nextStep = latestQuestion.stepNumber + 1; //次のstepNumberの判断
+
+      const nextQuestion = questions.find(
+        //questions.tsから一致するものを取得
+        (question) => question.stepNumber === nextStep,
       );
-    }
-    await prisma.chatMessage.create({
-      data: {
-        resumeId: id,
-        role: "USER",
-        content,
-        stepNumber: latestQuestion.stepNumber,
-      },
-    });
 
-    const nextStep = latestQuestion.stepNumber + 1; //次のstepNumberの判断
+      if (!nextQuestion) {
+        //質問がなくなったら下記を返す
+        return NextResponse.json(
+          {
+            message: null,
+            isAnswered: isResumeAnswered([...chatMessages, answerMessage]),
+          },
+          { status: 200 },
+        );
+      }
 
-    const nextQuestion = questions.find(
-      //questions.tsから一致するものを取得
-      (question) => question.stepNumber === nextStep,
-    );
+      const nextMessage = await tx.chatMessage.create({
+        //質問があれば下記をDBに登録してnextMessageを返す
+        data: {
+          resumeId: id,
+          role: "ASSISTANT",
+          content: nextQuestion.question,
+          stepNumber: nextQuestion.stepNumber,
+        },
+      });
 
-    if (!nextQuestion) {
-      //質問がなくなったら下記を返す
       return NextResponse.json(
         {
-          message: null,
-          isCompleted: true,
+          message: nextMessage,
+          isAnswered: false,
         },
         { status: 200 },
       );
+    });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return NextResponse.json(
+        {
+          message:
+            "回答はすでに送信されています。チャットを再読み込みしてください。",
+        },
+        { status: 409 },
+      );
     }
 
-    const nextMessage = await prisma.chatMessage.create({
-      //質問があれば下記をDBに登録してnextMessageを返す
-      data: {
-        resumeId: id,
-        role: "ASSISTANT",
-        content: nextQuestion.question,
-        stepNumber: nextQuestion.stepNumber,
-      },
-    });
-
-    return NextResponse.json(
-      {
-        message: nextMessage,
-        isCompleted: false,
-      },
-      { status: 200 },
-    );
-  } catch (error) {
     console.error("POST submit error:", error);
     return buildError(error);
   }
@@ -123,7 +170,14 @@ export const GET = async (
       },
     });
 
-    return NextResponse.json({ chatMessages }, { status: 200 });
+    return NextResponse.json<MessagesShowResponse>(
+      {
+        chatMessages,
+        isAnswered: isResumeAnswered(chatMessages),
+        status: resume.status,
+      },
+      { status: 200 },
+    );
   } catch (error) {
     return buildError(error);
   }

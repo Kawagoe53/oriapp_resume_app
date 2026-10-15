@@ -2,6 +2,7 @@
 
 import useDeleteResume from "@/app/_hooks/useDeleteResume";
 import useResumes from "@/app/_hooks/useResumes";
+import { ResumeStatus } from "@/app/generated/prisma/enums";
 import Link from "next/link";
 
 export default function GetResumes() {
@@ -45,7 +46,7 @@ export default function GetResumes() {
             className="flex h-72 flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
           >
             <Link
-              href={`/resumes/${resume.id}/chat`}
+              href={`/resumes/${resume.id}/${resume.status === ResumeStatus.COMPLETED ? "preview" : "chat"}`}
               className="flex min-h-0 flex-1 flex-col rounded focus-visible:outline-2 focus-visible:outline-blue-600"
             >
               <div className="mb-4 text-5xl">📄</div>

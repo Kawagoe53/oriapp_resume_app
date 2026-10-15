@@ -73,8 +73,8 @@ if (values.help) {
     ]) {
       await client.query(`INSERT INTO chat_messages
         (id, resume_id, role, content, step_number, created_at, updated_at)
-        VALUES ($1, $2, $3, $4::jsonb, 1, NOW(), NOW())`,
-      [randomUUID(), id, role, JSON.stringify(content)]);
+        VALUES ($1, $2, $3, $4, 1, NOW(), NOW())`,
+      [randomUUID(), id, role, content]);
     }
     await client.query(values["dry-run"] ? "ROLLBACK" : "COMMIT");
     inTransaction = false;
