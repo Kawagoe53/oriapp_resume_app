@@ -4,6 +4,7 @@ import { JobType } from "@/app/generated/prisma/enums";
 
 type Props = {
   onSelectJobType: (jobType: JobType) => void;
+  selectedJobType: JobType | null;
 };
 
 const jobTypes = [
@@ -24,14 +25,19 @@ const jobTypes = [
   },
 ];
 
-export default function SelectJobType({ onSelectJobType }: Props) {
+export default function SelectJobType({
+  onSelectJobType,
+  selectedJobType,
+}: Props) {
   return (
-    <div className="mx-auto max-w-3xl px-6 py-12">
+    <div className="mb-8">
       <h1 className="mb-2 text-3xl font-bold">
         希望する業種を選択してください
       </h1>
 
-      <p className="mb-8 text-gray-500">選択すると履歴書の作成が始まります。</p>
+      <p className="mb-8 text-gray-500">
+        業種を選び、タイトルを入力して作成を始めましょう。
+      </p>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {jobTypes.map((job) => (
@@ -39,7 +45,7 @@ export default function SelectJobType({ onSelectJobType }: Props) {
             key={job.jobType}
             type="button"
             onClick={() => onSelectJobType(job.jobType)}
-            className="text-black rounded-xl border border-gray-200 bg-white p-8 shadow-sm transition hover:-translate-y-1 hover:border-blue-500 hover:shadow-lg"
+            className={`text-black rounded-xl border p-8 shadow-sm transition hover:border-blue-500 ${selectedJobType === job.jobType ? "border-blue-600 bg-blue-50 ring-2 ring-blue-600" : "border-gray-200 bg-white"}`}
           >
             <div className="mb-4 text-5xl">{job.icon}</div>
 

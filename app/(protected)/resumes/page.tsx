@@ -51,7 +51,10 @@ export default function GetResumes() {
             >
               <div className="mb-4 text-5xl">📄</div>
 
-              <h2 className="text-lg font-bold text-gray-900">
+              <h2
+                className="line-clamp-1  text-lg font-bold text-gray-900"
+                title={resume.title || "無題の履歴書"}
+              >
                 {resume.title || "無題の履歴書"}
               </h2>
 
