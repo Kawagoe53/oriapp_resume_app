@@ -2,10 +2,7 @@
 
 import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 import { getDefaultResumeTitle } from "@/app/_libs/resumeTitle";
-import {
-  createResumeSchema,
-  MAX_RESUME_TITLE_LENGTH,
-} from "@/app/_schemas/resumeTitleSchema";
+import { createResumeSchema } from "@/app/_schemas/resumeTitleSchema";
 import type {
   CreateResumeRequestBody,
   CreateResumeResponse,
@@ -90,7 +87,6 @@ export default function NewResumePage() {
       <input
         id="resume-title"
         {...register("resume.title")}
-        maxLength={MAX_RESUME_TITLE_LENGTH}
         placeholder={
           jobType ? getDefaultResumeTitle(jobType) : "例：〇〇店への応募用"
         }

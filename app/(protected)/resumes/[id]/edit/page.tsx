@@ -3,7 +3,6 @@
 import useDeleteResume from "@/app/_hooks/useDeleteResume";
 import useFetch from "@/app/_hooks/useFetch";
 import { getDefaultResumeTitle } from "@/app/_libs/resumeTitle";
-import { MAX_RESUME_TITLE_LENGTH } from "@/app/_schemas/resumeTitleSchema";
 
 import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 import {
@@ -223,7 +222,6 @@ export default function EditPage() {
           <input
             id="resume-title"
             {...register("title")}
-            maxLength={MAX_RESUME_TITLE_LENGTH}
             className="w-full rounded border border-gray-300 p-3"
           />
           <p id="resume-title-hint" className="mt-2 text-sm text-gray-500">
