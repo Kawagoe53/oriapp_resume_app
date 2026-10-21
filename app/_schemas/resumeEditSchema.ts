@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { resumeTitleSchema } from "./resumeTitleSchema";
 
 export const MIN_JOB_EXPERIENCES = 1;
 export const MAX_JOB_EXPERIENCES = 3;
@@ -27,6 +28,7 @@ export const jobExperiencesUpdateSchema = z.array(jobExperienceSchema.extend({
   .max(MAX_JOB_EXPERIENCES, "職歴は最大3件までです");
 
 export const resumeEditSchema = z.object({
+  title: resumeTitleSchema,
   fullName: z.string(),
   email: z.string().email("Invalid email"),
   phone: z.string(),

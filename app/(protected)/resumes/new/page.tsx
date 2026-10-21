@@ -1,32 +1,42 @@
 "use client";
 
 import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
-import {
+import { getDefaultResumeTitle } from "@/app/_libs/resumeTitle";
+import { createResumeSchema } from "@/app/_schemas/resumeTitleSchema";
+import type {
   CreateResumeRequestBody,
   CreateResumeResponse,
 } from "@/app/api/resumes/route";
-import { JobType } from "@/app/generated/prisma/enums";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-
-import { useState } from "react";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import { z } from "zod";
 import SelectJobType from "./_components/SelectJobType";
 
+type NewResumeFormData = z.infer<typeof createResumeSchema>;
+
 export default function NewResumePage() {
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { token } = useSupabaseSession();
+  const {
+    register,
+    control,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<NewResumeFormData>({
+    resolver: zodResolver(createResumeSchema),
+    defaultValues: { resume: { title: "" } },
+  });
+  const jobType = useWatch({ control, name: "resume.jobType" });
 
-  const onSelectJobType = async (jobType: JobType) => {
+  const createResume = async (values: NewResumeFormData) => {
     try {
       if (!token) {
-        setError("ログインしてください");
+        setError("root.submit", { message: "ログインしてください" });
         return;
       }
-      const requestBody: CreateResumeRequestBody = {
-        resume: {
-          jobType,
-        },
-      };
+      const requestBody: CreateResumeRequestBody = values;
       const res = await fetch("/api/resumes", {
         method: "POST",
         headers: {
@@ -36,7 +46,10 @@ export default function NewResumePage() {
         body: JSON.stringify(requestBody),
       });
       if (!res.ok) {
-        setError("送信に失敗しました");
+        const result = await res.json();
+        setError("root.submit", {
+          message: result.message || "送信に失敗しました",
+        });
         return;
       }
 
@@ -44,14 +57,59 @@ export default function NewResumePage() {
       router.push(`/resumes/${data.resume.id}/chat`);
     } catch (error) {
       console.error(error);
-      setError("エラーが発生しました");
+      setError("root.submit", { message: "エラーが発生しました" });
     }
   };
 
   return (
-    <div>
-      <SelectJobType onSelectJobType={onSelectJobType} />
-      {error && <p>{error}</p>}
-    </div>
+    <form
+      className="mx-auto max-w-3xl px-6 py-12"
+      onSubmit={handleSubmit(createResume)}
+    >
+      <Controller
+        name="resume.jobType"
+        control={control}
+        render={({ field }) => (
+          <SelectJobType
+            onSelectJobType={field.onChange}
+            selectedJobType={field.value ?? null}
+          />
+        )}
+      />
+      {errors.resume?.jobType && (
+        <p role="alert" className="mb-4 text-red-600">
+          {errors.resume.jobType.message}
+        </p>
+      )}
+      <label htmlFor="resume-title" className="mb-2 block font-semibold">
+        タイトル（任意）
+      </label>
+      <input
+        id="resume-title"
+        {...register("resume.title")}
+        placeholder={
+          jobType ? getDefaultResumeTitle(jobType) : "例：〇〇店への応募用"
+        }
+        className="w-full rounded border border-gray-300 p-3"
+      />
+      <p id="resume-title-hint" className="mt-2 text-sm text-gray-500">
+        自分用の管理名です。提出する履歴書には表示されません（50文字以内）。未入力の場合は業種に応じた名前が付きます。
+      </p>
+      <p id="resume-title-error" role="alert" className="text-red-600">
+        {errors.resume?.title?.message}
+      </p>
+      {errors.root?.submit && (
+        <p role="alert" className="mt-4 text-red-600">
+          {errors.root.submit.message}
+        </p>
+      )}
+      <button
+        type="submit"
+        disabled={isSubmitting || !jobType}
+        className="mt-6 rounded bg-blue-600 px-6 py-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {isSubmitting ? "作成中…" : "作成してチャットへ"}
+      </button>
+    </form>
   );
 }

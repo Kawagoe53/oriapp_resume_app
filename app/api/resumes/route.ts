@@ -1,3 +1,5 @@
+import { getDefaultResumeTitle } from "@/app/_libs/resumeTitle";
+import { createResumeSchema } from "@/app/_schemas/resumeTitleSchema";
 import { questions } from "@/app/_constants/questions";
 import buildError from "@/app/_libs/buildError";
 import getUserId from "@/app/_libs/getUserId";
@@ -45,6 +47,7 @@ export const GET = async (request: NextRequest) => {
 export type CreateResumeRequestBody = {
   resume: {
     jobType: JobType;
+    title?: string;
   };
 };
 export type CreateResumeResponse = {
@@ -57,12 +60,16 @@ export const POST = async (request: NextRequest) => {
   try {
     const userId = await getUserId(request);
 
-    const body: CreateResumeRequestBody = await request.json();
-    const { resume } = body;
+    const parsed = createResumeSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return NextResponse.json({ message: parsed.error.issues[0].message }, { status: 400 });
+    }
+    const { resume } = parsed.data;
     const data = await prisma.resume.create({
       data: {
         userId,
         jobType: resume.jobType,
+        title: resume.title || getDefaultResumeTitle(resume.jobType),
       },
     });
 

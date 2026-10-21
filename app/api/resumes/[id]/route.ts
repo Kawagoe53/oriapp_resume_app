@@ -1,3 +1,4 @@
+import { resumeTitleSchema } from "@/app/_schemas/resumeTitleSchema";
 import { jobExperiencesUpdateSchema } from "@/app/_schemas/resumeEditSchema";
 import buildError from "@/app/_libs/buildError";
 import getUserId from "@/app/_libs/getUserId";
@@ -58,6 +59,10 @@ export const PUT = async (
     const userId = await getUserId(request);
 
     const body: UpdateResumeRequestBody = await request.json();
+    const parsedTitle = resumeTitleSchema.safeParse(body?.resume?.title);
+    if (!parsedTitle.success) {
+      return NextResponse.json({ message: parsedTitle.error.issues[0].message }, { status: 400 });
+    }
     const parsedJobs = jobExperiencesUpdateSchema.safeParse(body?.jobExperiences);
     if (!parsedJobs.success) {
       return NextResponse.json(
@@ -74,7 +79,7 @@ export const PUT = async (
           id,
           userId,
         },
-        data: resume,
+        data: { ...resume, title: parsedTitle.data },
       });
 
       if (jobExperiences) {

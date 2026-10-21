@@ -2,6 +2,7 @@
 
 import useDeleteResume from "@/app/_hooks/useDeleteResume";
 import useFetch from "@/app/_hooks/useFetch";
+import { getDefaultResumeTitle } from "@/app/_libs/resumeTitle";
 
 import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 import {
@@ -76,12 +77,14 @@ export default function EditPage() {
     name: "jobExperiences",
   });
 
+  //APIから取得した履歴書を、編集フォームで使える形に変換してセットする処理
   useEffect(() => {
     if (!resumeResponse) return;
 
     const resume = resumeResponse.resume;
 
     reset({
+      title: resume.title?.trim() || getDefaultResumeTitle(resume.jobType),
       fullName: resume.fullName ?? "",
       email: resume.email ?? "",
       phone: resume.phone ?? "",
@@ -105,22 +108,34 @@ export default function EditPage() {
           }))
         : [],
 
-      jobExperiences: resume.jobExperiences.length === 0 ? [{
-        companyName: "", position: "", jobType: "", startDate: "", endDate: "", description: [],
-      }] : resume.jobExperiences.map((experience) => ({
-        companyName: experience.companyName,
-        position: experience.position,
-        jobType: experience.jobType,
-        startDate: new Date(experience.startDate).toISOString().split("T")[0],
-        endDate: experience.endDate
-          ? new Date(experience.endDate).toISOString().split("T")[0]
-          : "",
-        description: Array.isArray(experience.description)
-          ? experience.description.map((description) => ({
-              value: String(description),
-            }))
-          : [],
-      })),
+      jobExperiences:
+        resume.jobExperiences.length === 0
+          ? [
+              {
+                companyName: "",
+                position: "",
+                jobType: "",
+                startDate: "",
+                endDate: "",
+                description: [],
+              },
+            ]
+          : resume.jobExperiences.map((experience) => ({
+              companyName: experience.companyName,
+              position: experience.position,
+              jobType: experience.jobType,
+              startDate: new Date(experience.startDate)
+                .toISOString()
+                .split("T")[0],
+              endDate: experience.endDate
+                ? new Date(experience.endDate).toISOString().split("T")[0]
+                : "",
+              description: Array.isArray(experience.description)
+                ? experience.description.map((description) => ({
+                    value: String(description),
+                  }))
+                : [],
+            })),
     });
   }, [resumeResponse, reset]);
 
@@ -139,7 +154,7 @@ export default function EditPage() {
     try {
       const body: UpdateResumeRequestBody = {
         resume: {
-          title: resume.title ?? "",
+          title: data.title,
           jobType: resume.jobType,
           fullName: data.fullName,
           email: data.email,
@@ -182,7 +197,9 @@ export default function EditPage() {
 
       router.push(`/resumes/${id}/preview`);
     } catch (error) {
-      setSaveError(error instanceof Error ? error.message : "履歴書の更新に失敗しました");
+      setSaveError(
+        error instanceof Error ? error.message : "履歴書の更新に失敗しました",
+      );
     }
   };
 
@@ -198,6 +215,22 @@ export default function EditPage() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <fieldset disabled={isSubmitting || isDeleting}>
         <h1>履歴書編集</h1>
+        <div className="my-6">
+          <label htmlFor="resume-title" className="mb-2 block font-semibold">
+            タイトル
+          </label>
+          <input
+            id="resume-title"
+            {...register("title")}
+            className="w-full rounded border border-gray-300 p-3"
+          />
+          <p id="resume-title-hint" className="mt-2 text-sm text-gray-500">
+            自分用の管理名です。提出する履歴書には表示されません（50文字以内）。
+          </p>
+          <p id="resume-title-error" role="alert" className="text-red-600">
+            {errors.title?.message}
+          </p>
+        </div>
         <PersonalInformationFields register={register} errors={errors} />
 
         <CertificateFields
@@ -219,13 +252,20 @@ export default function EditPage() {
         <SummaryFields register={register} />
 
         <p className="my-4 text-sm">
-          職歴は1〜3件登録してください（アルバイト経験も記入できます）。現在 {jobExperienceFields.length} 件
+          職歴は1〜3件登録してください（アルバイト経験も記入できます）。現在{" "}
+          {jobExperienceFields.length} 件
         </p>
         {jobExperienceFields.length > MAX_JOB_EXPERIENCES && (
-          <p role="alert" className="text-red-600">保存するには、残す職歴を選んで3件以内にしてください。</p>
+          <p role="alert" className="text-red-600">
+            保存するには、残す職歴を選んで3件以内にしてください。
+          </p>
         )}
-        {(errors.jobExperiences?.root?.message || errors.jobExperiences?.message) && (
-          <p role="alert" className="text-red-600">{errors.jobExperiences.root?.message || errors.jobExperiences.message}</p>
+        {(errors.jobExperiences?.root?.message ||
+          errors.jobExperiences?.message) && (
+          <p role="alert" className="text-red-600">
+            {errors.jobExperiences.root?.message ||
+              errors.jobExperiences.message}
+          </p>
         )}
         {jobExperienceFields.map((field, index) => (
           <JobExperienceFields
@@ -236,7 +276,8 @@ export default function EditPage() {
             errors={errors}
             canRemove={jobExperienceFields.length > MIN_JOB_EXPERIENCES}
             onRemove={() => {
-              if (jobExperienceFields.length > MIN_JOB_EXPERIENCES) removeJobExperience(index);
+              if (jobExperienceFields.length > MIN_JOB_EXPERIENCES)
+                removeJobExperience(index);
             }}
           />
         ))}
@@ -262,19 +303,30 @@ export default function EditPage() {
 
         <EducationFields register={register} errors={errors} />
 
-        {saveError && <p role="alert" className="text-red-600">{saveError}</p>}
+        {saveError && (
+          <p role="alert" className="text-red-600">
+            {saveError}
+          </p>
+        )}
         <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "保存中..." : "保存"}
         </button>
         <div className="mt-8 border-t border-gray-200 pt-4">
-          {deleteError && <p role="alert" className="mb-2 text-red-600">{deleteError}</p>}
+          {deleteError && (
+            <p role="alert" className="mb-2 text-red-600">
+              {deleteError}
+            </p>
+          )}
           <button
             type="button"
             disabled={isSubmitting || isDeleting}
             className="rounded border border-red-300 px-4 py-2 text-red-600 hover:bg-red-50 focus-visible:outline-2 focus-visible:outline-red-600 disabled:cursor-not-allowed disabled:opacity-50"
             onClick={async () => {
               if (isSubmitting || isDeleting) return;
-              const isDeleted = await deleteResume(id, resumeResponse.resume.title);
+              const isDeleted = await deleteResume(
+                id,
+                resumeResponse.resume.title,
+              );
               if (isDeleted) {
                 setDeleted(true);
                 router.replace("/resumes");
