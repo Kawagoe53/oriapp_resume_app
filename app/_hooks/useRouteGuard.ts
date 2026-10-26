@@ -9,12 +9,8 @@ export const useRouteGuard = () => {
   useEffect(() => {
     if (isLoading) return; // sessionの取得中は何もしない
 
-    const fetcher = async () => {
-      if (session === null) {
-        router.replace("/login");
-      }
-    };
-
-    fetcher();
+    if (session === null) router.replace("/login");
   }, [router, isLoading, session]);
+
+  return { session, isLoading };
 };

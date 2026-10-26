@@ -1,25 +1,25 @@
 import { supabase } from "@/app/_libs/supabase";
 import { Session } from "@supabase/supabase-js";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
+//Supabaseの認証状態を監視して、ログインしているかどうか・読み込み中かどうか・アクセストークンを管理するための処理
 export const useSupabaseSession = () => {
-  // 初期値はundefined、 nullにしてしまうと ロード中,未ログインを区別できない
   const [session, setSession] = useState<Session | null | undefined>(undefined);
-  const [token, setToken] = useState<string | null>(null);
-  const pathname = usePathname(); //今いるURLを取得/resumesとか/loginとか
 
   useEffect(() => {
-    const fetcher = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession(); //supabaseからsessionを取得
-      setSession(session);
-      setToken(session?.access_token || null); //セッションからtokenあれば返して、なければnull
-    };
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(
+      //Supabaseが提供する関数で、認証状態の変化を通知してくれる。
+      (_event, currentSession) => setSession(currentSession),
+    );
+    return () => subscription.unsubscribe();
+    //関数を返しているため、クリーンアップ関数として、アンマウントされると監視を解除する。
+  }, []);
 
-    fetcher();
-  }, [pathname]); //URL変わるたびにsessionをチェックする
-
-  return { session, isLoading: session === undefined, token };
+  return {
+    session,
+    isLoading: session === undefined,
+    token: session?.access_token ?? null,
+  };
 };
