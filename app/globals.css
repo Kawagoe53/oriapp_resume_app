@@ -49,24 +49,24 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: #fff;
+  --foreground: #242422;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  --primary: #242422;
+  --primary-foreground: #fff;
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  --muted-foreground: #686863;
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --ring: var(--primary);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -269,4 +269,109 @@
 
 .resume-content .resume-job:last-child {
   margin-bottom: 0;
+}
+
+/* Neutral palette shared by the sidebar and resume cards. */
+:root {
+  --rk-ink: var(--foreground);
+  --rk-muted: var(--muted-foreground);
+  --rk-danger: #b91c1c;
+  --rk-line: #e7e7e2;
+}
+@layer components {
+  .rk-app { min-height: 100vh; color: var(--foreground); background: var(--background); }
+  .rk-muted { color: var(--rk-muted); }
+  .rk-error { color: var(--rk-danger); font-size: .875rem; }
+  .rk-sidebar { background: #f8f8f5; border-right: 1px solid var(--rk-line); }
+  .rk-nav-link { display: block; padding: 12px 16px; border-radius: 4px; color: var(--rk-muted); font-size: .875rem; transition: background-color 150ms ease; }
+  .rk-nav-link[data-selected="true"] { color: var(--foreground); background: #eaeae4; font-weight: 600; }
+  .rk-link { color: var(--foreground); text-decoration: underline; text-underline-offset: 4px; }
+  .rk-button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 11px 18px; border-radius: 6px; font-size: .875rem; font-weight: 500; cursor: pointer; transition: background-color 150ms ease; }
+  .rk-button--primary { background: var(--primary); color: var(--primary-foreground); }
+  .rk-button--secondary { background: #f5f5f2; color: var(--foreground); }
+  .rk-button:disabled { opacity: .45; cursor: not-allowed; }
+}
+.rk-sidebar :where(a, button):focus-visible,
+.rk-compact-card :where(a, button):focus-visible,
+.rk-button:focus-visible { outline: 2px solid var(--foreground); outline-offset: 4px; }
+@media (hover: hover) {
+  .rk-button--primary:hover { background: #454540; }
+  .rk-button--secondary:hover, .rk-nav-link:hover { background: #eaeae4; }
+}
+@layer components {
+  .rk-compact-card {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 220px;
+    padding: 24px;
+    border: 1px solid var(--rk-line);
+    border-radius: 10px;
+    background: white;
+    box-shadow: 0 2px 4px rgb(0 0 0 / 2%);
+    transition:
+      border-color 150ms ease,
+      box-shadow 150ms ease;
+  }
+  .rk-card-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 16px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .rk-card-action svg {
+    transition: transform 150ms ease;
+  }
+}
+@media (hover: hover) {
+  .rk-compact-card:hover {
+    border-color: #c6c6be;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 4%);
+  }
+  .rk-card-action:hover svg {
+    transform: translateX(3px);
+  }
+}
+
+@layer components {
+  .rk-card-delete {
+    flex-shrink: 0;
+    padding: 4px 8px;
+    margin-top: -2px;
+    color: var(--rk-danger);
+    background: transparent;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: background-color 150ms ease;
+  }
+  .rk-card-delete:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+@media (hover: hover) {
+  .rk-card-delete:hover:not(:disabled) {
+    background: #fef2f2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rk-nav-link, .rk-button, .rk-compact-card, .rk-card-action svg, .rk-card-delete { transition: none; }
+}
+
+@layer components {
+  .rk-card-created {
+    display: block;
+    margin-top: auto;
+    padding-top: 24px;
+    color: var(--rk-muted);
+    font-size: .6875rem;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.5;
+  }
 }
