@@ -61,6 +61,13 @@ export default function ResumeLayout({
           >
             AI使用回数
           </Link>
+          <Link
+            href="/contact"
+            data-selected={isSelected("/contact")}
+            className="rk-nav-link"
+          >
+            お問い合わせ
+          </Link>
         </nav>
         <div className="mt-auto px-4 pb-4 pt-8">
           {authError && <p className="rk-error mb-3">{authError}</p>}
@@ -83,7 +90,9 @@ export default function ResumeLayout({
         </div>
       </aside>
 
-      <main className="protected-content ml-60 min-h-screen px-12 py-14">
+      <main
+        className={`protected-content ml-60 min-h-screen ${pathname === "/contact" ? "px-6 py-6 lg:px-12 lg:py-8" : "px-12 py-14"}`}
+      >
         {children}
       </main>
     </div>
