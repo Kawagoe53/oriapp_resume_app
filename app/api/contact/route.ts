@@ -1,6 +1,6 @@
 import { prisma } from "@/app/_libs/prisma";
 import { contactSchema, contactTypeLabels } from "@/app/_schemas/contactSchema";
-import { Resend } from "resend";
+import { sendMail } from "@/app/_libs/resend";
 
 export const runtime = "nodejs";
 
@@ -41,20 +41,11 @@ export async function POST(request: Request) {
   }
 
   try {
-    const apiKey = process.env.RESEND_API_KEY;
-    const recipient = process.env.CONTACT_EMAIL;
-    if (!apiKey || !recipient) throw new Error("Missing mail configuration"); //どちらか一方でも未設定なら例外を投げます。
-    const resend = new Resend(apiKey); //APIキーを設定したツールを作る(準備)
-    //Resendのライブラリが「クラスから new で作って使う」という設計
-    const { error } = await resend.emails.send({
-      //実際に送信を依頼する
-      from: process.env.CONTACT_FROM_EMAIL || "onboarding@resend.dev",
-      to: recipient,
+    await sendMail({
       replyTo: email,
       subject: `【rireki お問い合わせ】${subject}`,
       text: `受付ID: ${contactId}\n名前: ${name}\nメールアドレス: ${email}\n種類: ${contactTypeLabels[type]}\n題名: ${subject}\n\n${content}`,
     });
-    if (error) throw new Error("Mail delivery failed");
   } catch {
     // 保存済みのため受付成功を返し、通知失敗はログに残す。
     console.error("Contact notification failed", { contactId });
