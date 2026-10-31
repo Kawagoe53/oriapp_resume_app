@@ -4,12 +4,13 @@ import handleGoogleSignIn from "@/app/_libs/googleAuth";
 import { supabase } from "@/app/_libs/supabase";
 import { loginSchema, LogInSchemaValues } from "@/app/_schemas/authSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
 
-export default function LogInForm() {
+export default function LogInForm({ passwordResetComplete = false }: { passwordResetComplete?: boolean }) {
   const router = useRouter();
   const {
     register,
@@ -39,6 +40,9 @@ export default function LogInForm() {
         onSubmit={handleSubmit(onSubmit)}
         className="space-y-4 w-full max-w-100"
       >
+        {passwordResetComplete && (
+          <p role="status">パスワードを再設定しました。新しいパスワードでログインしてください。</p>
+        )}
         <Input
           label="メールアドレス"
           id="email"
@@ -61,6 +65,10 @@ export default function LogInForm() {
         <Button type="submit" disabled={isSubmitting}>
           ログイン
         </Button>
+
+        <Link href="/forgot-password" className="block text-sm underline">
+          パスワードを忘れた方
+        </Link>
 
         <div className="relative my-6">
           <div className="border-t border-gray-300" />
