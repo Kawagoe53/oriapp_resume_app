@@ -4,7 +4,7 @@ import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 import { supabase } from "@/app/_libs/supabase";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ResumeLayout({
   children,
@@ -13,10 +13,19 @@ export default function ResumeLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { session, isLoading } = useSupabaseSession();
+  const { session, isLoading, isPasswordRecovery } = useSupabaseSession();
+  const isResetPage = pathname === "/reset-password" || pathname === "/forgot-password";
+  // 新規登録の確認リンクもOTPになる。通常のパスワードログインは妨げない。
+  const isRestrictedLoginPage = isPasswordRecovery && pathname === "/login";
   const isLoggedIn = Boolean(session);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isLoading && isPasswordRecovery && !isResetPage && !isRestrictedLoginPage) {
+      router.replace("/reset-password");
+    }
+  }, [isLoading, isPasswordRecovery, isResetPage, isRestrictedLoginPage, router]);
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
@@ -34,6 +43,10 @@ export default function ResumeLayout({
   };
   const isSelected = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
+
+  // 再設定画面には通常のナビゲーションを出さず、他画面も描画しない。
+  if (isResetPage || isRestrictedLoginPage) return <main className="min-h-screen px-6 py-12">{children}</main>;
+  if (isLoading || isPasswordRecovery) return <p role="status">ログイン状態を確認中…</p>;
 
   return (
     <div className="rk-app">
