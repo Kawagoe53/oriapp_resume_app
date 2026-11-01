@@ -13,8 +13,8 @@ export default function ChatMessage({ role, content }: ChatMessageProps) {
       }
     >
       <div
-        className={`max-w-[70%] rounded-lg p-3${
-          role === "ASSISTANT" ? " bg-gray-200 " : " bg-blue-500 text-white"
+        className={`max-w-[85%] whitespace-pre-wrap break-words rounded-lg p-4 text-sm leading-7 sm:max-w-[70%]${
+          role === "ASSISTANT" ? " rk-chat-assistant " : " rk-chat-user"
         }`}
       >
         {content}

@@ -34,38 +34,38 @@ export default function AiUsagePage() {
   return (
     <div className="mx-auto max-w-5xl">
       <header className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">今月のAI生成回数</h1>
-        <p className="mt-2 text-sm text-gray-600">
+        <h1 className="text-2xl font-bold text-foreground">今月のAI生成回数</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
           履歴書のAI生成は、毎月 {data.limit} 回までご利用いただけます。
         </p>
       </header>
 
       <div className="grid items-start gap-6 min-[1100px]:grid-cols-2">
         <div className="space-y-5">
-          <div className="rounded-xl bg-blue-50 p-5">
+          <div className="rounded-xl bg-secondary p-5">
             <div className="flex items-end justify-between gap-4">
-              <p className="text-lg font-semibold text-gray-900">
+              <p className="text-lg font-semibold text-foreground">
                 {data.used}{" "}
-                <span className="text-sm font-normal text-gray-600">
+                <span className="text-sm font-normal text-muted-foreground">
                   / {data.limit} 回使用
                 </span>
               </p>
               <p
-                className={`text-sm font-semibold ${isLimitReached ? "text-red-600" : "text-blue-700"}`}
+                className={`text-sm font-semibold ${isLimitReached ? "text-red-600" : "text-primary"}`}
               >
                 残り {data.remaining} 回
               </p>
             </div>
-            <div className="mt-4 h-3 overflow-hidden rounded-full bg-blue-100">
+            <div className="mt-4 h-3 overflow-hidden rounded-full bg-accent">
               <div
-                className={`h-full rounded-full ${isLimitReached ? "bg-red-500" : "bg-blue-600"}`}
+                className={`h-full rounded-full ${isLimitReached ? "bg-red-500" : "bg-primary"}`}
                 style={{ width: `${percentage}%` }}
               />
             </div>
           </div>
 
-          <div className="rounded-xl border border-gray-200 p-5 text-sm text-gray-600">
-            <p className="font-medium text-gray-900">次回のリセット</p>
+          <div className="rounded-xl border border-border p-5 text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">次回のリセット</p>
             <p className="mt-1">{resetDate} に使用回数がリセットされます。</p>
           </div>
 
@@ -76,16 +76,16 @@ export default function AiUsagePage() {
           ) : (
             <Link
               href="/resumes"
-              className="inline-flex rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+              className="inline-flex rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--rk-primary-hover)]"
             >
               履歴書を作成する
             </Link>
           )}
         </div>
 
-        <section className="rounded-xl border border-gray-200 p-5">
-          <h2 className="font-medium text-gray-900">作成した履歴書</h2>
-          <p className="mt-1 text-sm text-gray-600">
+        <section className="rounded-xl border border-border p-5">
+          <h2 className="font-medium text-foreground">作成した履歴書</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
             日付を選択すると、その日に作成した履歴書を確認できます。
           </p>
           <Calendar
@@ -96,7 +96,7 @@ export default function AiUsagePage() {
             captionLayout="dropdown"
             modifiers={{ created: createdDates }}
             modifiersClassNames={{
-              created: "bg-blue-100 text-blue-700 font-semibold",
+              created: "bg-accent text-primary font-semibold",
             }}
           />
         </section>

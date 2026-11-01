@@ -1,8 +1,4 @@
 .landing {
-  --primary: #123d2c;
-  --rk-primary-hover: #0b291d;
-  --rk-hover: #dce9df;
-  --landing-green-soft: #edf3ee;
   color: var(--foreground); background: var(--background); font-family: inherit; }
 .landing * { box-sizing: border-box; }
 .landing-container { width: min(1120px, calc(100% - 80px)); margin-inline: auto; }

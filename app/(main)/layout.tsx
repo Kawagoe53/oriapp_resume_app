@@ -54,9 +54,9 @@ export default function ResumeLayout({
         <Link
           href="/"
           aria-label="rereki. トップページへ"
-          className="mx-8 mb-14 mt-10 inline-block self-start rounded text-3xl font-bold tracking-tight text-black focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-800"
+          className="mx-8 mb-14 mt-10 inline-block self-start rounded text-3xl font-bold tracking-tight text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
-          rereki<span>.</span>
+          rereki<span className="text-primary">.</span>
         </Link>
 
         <nav className="space-y-2 px-4">

@@ -89,7 +89,7 @@ export default function ContactPage() {
         </p>
       </header>
       {submitted ? (
-        <section className="rounded-xl border border-neutral-200 bg-white p-6 sm:p-8">
+        <section className="rounded-xl border border-border bg-white p-6 sm:p-8">
           <div role="status" aria-live="polite">
             <h2 className="text-lg font-semibold">
               お問い合わせを受け付けました
@@ -110,7 +110,7 @@ export default function ContactPage() {
         <form
           onSubmit={handleSubmit(onSubmit)}
           noValidate
-          className="flex flex-1 flex-col gap-4 rounded-xl border border-neutral-200 bg-white p-5 sm:p-6"
+          className="flex flex-1 flex-col gap-4 rounded-xl border border-border bg-white p-5 sm:p-6"
         >
           <fieldset
             disabled={isSubmitting}
@@ -130,7 +130,7 @@ export default function ContactPage() {
                 aria-describedby={
                   errors.type ? "contact-type-error" : undefined
                 }
-                className="mt-2 block w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-base outline-none focus-visible:border-neutral-700 focus-visible:ring-2 focus-visible:ring-neutral-200 disabled:opacity-60"
+                className="mt-2 block w-full rounded-lg border border-input bg-white px-3 py-2 text-base outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 disabled:opacity-60"
               >
                 {Object.entries(contactTypeLabels).map(([value, label]) => (
                   <option key={value} value={value}>
@@ -152,7 +152,7 @@ export default function ContactPage() {
                 "aria-invalid": Boolean(errors[key]),
                 "aria-describedby": errors[key] ? `${key}-error` : undefined,
                 className:
-                  "mt-2 block w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-base outline-none focus-visible:border-neutral-700 focus-visible:ring-2 focus-visible:ring-neutral-200 disabled:opacity-60",
+                  "mt-2 block w-full rounded-lg border border-input bg-white px-3 py-2 text-base outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 disabled:opacity-60",
               };
               return (
                 <div

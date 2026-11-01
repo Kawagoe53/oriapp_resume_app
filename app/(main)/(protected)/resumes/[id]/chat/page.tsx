@@ -80,15 +80,15 @@ export default function ResumeChatPage() {
     return <p> データがありません</p>;
   }
   return (
-    <div className="flex h-screen flex-col">
-      <header className="border-b p-4">
+    <div className="rk-panel mx-auto flex h-[calc(100dvh-7rem)] min-h-[480px] max-w-4xl flex-col overflow-hidden rounded-xl">
+      <header className="border-b bg-secondary p-4">
         <div className="flex items-center gap-4">
-          <Link href="/resumes">← 戻る</Link>
+          <Link className="rk-link text-sm" href="/resumes">← 戻る</Link>
           <h1 className="text-lg font-bold">カフェ店員</h1>
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto p-4">
+      <main className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4 sm:p-6">
         {chatData.chatMessages.map((message) => (
           <ChatMessage
             key={message.id}
@@ -99,10 +99,10 @@ export default function ResumeChatPage() {
       </main>
 
       <footer className="border-t p-4">
-        <form onSubmit={handleSubmit(onSubmit)} className="flex gap-2">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-wrap items-center gap-3">
           <input
             disabled={isSubmitting || chatData.isAnswered || chatData.status === ResumeStatus.COMPLETED}
-            className="flex-1 rounded border px-3 py-2"
+            className="rk-field min-w-0 flex-1 rounded-lg px-3 py-3"
             type="text"
             placeholder="メッセージを入力..."
             {...register("message")}
@@ -110,13 +110,13 @@ export default function ResumeChatPage() {
           {errors.message && <p>{errors.message.message}</p>}
           {submitError && <p className="text-red-500">{submitError}</p>}
           {chatData.status === ResumeStatus.COMPLETED ? (
-            <Link href={`/resumes/${resumeId}/preview`}>プレビューを見る</Link>
+            <Link className="rk-button rk-button--primary" href={`/resumes/${resumeId}/preview`}>プレビューを見る</Link>
           ) : chatData.isAnswered ? (
-            <button type="button" onClick={handleGenerate}>
+            <button className="rk-button rk-button--primary" type="button" onClick={handleGenerate}>
               履歴書を生成する
             </button>
           ) : (
-            <button type="submit" disabled={isSubmitting}>
+            <button className="rk-button rk-button--primary" type="submit" disabled={isSubmitting}>
               {isSubmitting ? "送信中..." : "送信"}
             </button>
           )}

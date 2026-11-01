@@ -55,17 +55,17 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #242422;
+  --primary: #123d2c;
   --primary-foreground: #fff;
-  --secondary: oklch(0.97 0 0);
+  --secondary: #edf3ee;
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: #686863;
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --accent: #dce9df;
+  --accent-foreground: #123d2c;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
+  --border: #dce5de;
+  --input: #b8cdbd;
   --ring: var(--primary);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
@@ -271,32 +271,38 @@
   margin-bottom: 0;
 }
 
-/* Neutral palette shared by the sidebar and resume cards. */
+/* Shared brand palette for the landing page and application. */
 :root {
   --rk-ink: var(--foreground);
   --rk-muted: var(--muted-foreground);
   --rk-danger: #b91c1c;
-  --rk-line: #e7e7e2;
+  --rk-line: #dce5de;
+  --landing-green-soft: #edf3ee;
+  --landing-green-line: #b8cdbd;
+  --rk-surface: #f3f7f3;
+  --rk-surface-secondary: #edf3ee;
+  --rk-hover: #dce9df;
+  --rk-primary-hover: #0b291d;
 }
 @layer components {
   .rk-app { min-height: 100vh; color: var(--foreground); background: var(--background); }
   .rk-muted { color: var(--rk-muted); }
   .rk-error { color: var(--rk-danger); font-size: .875rem; }
-  .rk-sidebar { background: #f8f8f5; border-right: 1px solid var(--rk-line); }
+  .rk-sidebar { background: var(--rk-surface); border-right: 1px solid var(--rk-line); }
   .rk-nav-link { display: block; padding: 12px 16px; border-radius: 4px; color: var(--rk-muted); font-size: .875rem; transition: background-color 150ms ease; }
-  .rk-nav-link[data-selected="true"] { color: var(--foreground); background: #eaeae4; font-weight: 600; }
-  .rk-link { color: var(--foreground); text-decoration: underline; text-underline-offset: 4px; }
+  .rk-nav-link[data-selected="true"] { color: var(--primary); background: var(--rk-hover); font-weight: 600; }
+  .rk-link { color: var(--primary); text-decoration: underline; text-underline-offset: 4px; }
   .rk-button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 11px 18px; border-radius: 6px; font-size: .875rem; font-weight: 500; cursor: pointer; transition: background-color 150ms ease; }
   .rk-button--primary { background: var(--primary); color: var(--primary-foreground); }
-  .rk-button--secondary { background: #f5f5f2; color: var(--foreground); }
+  .rk-button--secondary { background: var(--rk-surface-secondary); color: var(--foreground); }
   .rk-button:disabled { opacity: .45; cursor: not-allowed; }
 }
 .rk-sidebar :where(a, button):focus-visible,
 .rk-compact-card :where(a, button):focus-visible,
-.rk-button:focus-visible { outline: 2px solid var(--foreground); outline-offset: 4px; }
+.rk-button:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; }
 @media (hover: hover) {
-  .rk-button--primary:hover { background: #454540; }
-  .rk-button--secondary:hover, .rk-nav-link:hover { background: #eaeae4; }
+  .rk-button--primary:hover { background: var(--rk-primary-hover); }
+  .rk-button--secondary:hover, .rk-nav-link:hover { background: var(--rk-hover); }
 }
 @layer components {
   .rk-compact-card {
@@ -321,6 +327,7 @@
     padding-top: 16px;
     font-size: 0.875rem;
     font-weight: 500;
+    color: var(--primary);
   }
   .rk-card-action svg {
     transition: transform 150ms ease;
@@ -328,7 +335,7 @@
 }
 @media (hover: hover) {
   .rk-compact-card:hover {
-    border-color: #c6c6be;
+    border-color: var(--landing-green-line);
     box-shadow: 0 4px 12px rgb(0 0 0 / 4%);
   }
   .rk-card-action:hover svg {
@@ -374,4 +381,13 @@
     font-variant-numeric: tabular-nums;
     line-height: 1.5;
   }
+}
+
+@layer components {
+  .rk-panel { border: 1px solid var(--rk-line); background: var(--card); }
+  .rk-field { border: 1px solid var(--input); background: var(--background); }
+  .rk-field:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-color: var(--primary); }
+  .rk-field:disabled { opacity: .6; cursor: not-allowed; }
+  .rk-chat-assistant { background: var(--landing-green-soft); color: var(--foreground); border: 1px solid var(--rk-line); }
+  .rk-chat-user { background: var(--primary); color: var(--primary-foreground); }
 }
