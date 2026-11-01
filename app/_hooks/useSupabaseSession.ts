@@ -1,3 +1,4 @@
+import { isPasswordRecoverySession } from "@/app/_libs/passwordRecovery";
 import { supabase } from "@/app/_libs/supabase";
 import { Session } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
@@ -21,5 +22,6 @@ export const useSupabaseSession = () => {
     session,
     isLoading: session === undefined,
     token: session?.access_token ?? null,
+    isPasswordRecovery: isPasswordRecoverySession(session),
   };
 };

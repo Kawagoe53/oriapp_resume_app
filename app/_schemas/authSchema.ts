@@ -39,3 +39,16 @@ export const loginSchema = z.object({
 // 型定義のエクスポート
 export type SignUpSchemaValues = z.infer<typeof signUpSchema>;
 export type LogInSchemaValues = z.infer<typeof loginSchema>;
+
+// 再設定も新規登録と同じパスワード条件・確認欄を使う。
+export const resetPasswordSchema = z.object({
+  password: signUpSchema.shape.password,
+  confirmPassword: signUpSchema.shape.confirmPassword,
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "パスワードが一致しません",
+  path: ["confirmPassword"],
+});
+
+export const forgotPasswordSchema = loginSchema.pick({ email: true });
+export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
+export type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
