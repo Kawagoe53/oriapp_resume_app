@@ -1,5 +1,7 @@
 "use client";
 
+import { actionButtonVariants } from "@/app/_components/ui/actionButtonVariants";
+
 import { useSupabaseSession } from "@/app/_hooks/useSupabaseSession";
 import { supabase } from "@/app/_libs/supabase";
 import Link from "next/link";
@@ -49,8 +51,8 @@ export default function ResumeLayout({
   if (isLoading || isPasswordRecovery) return <p role="status">ログイン状態を確認中…</p>;
 
   return (
-    <div className="rk-app">
-      <aside className="resume-navigation rk-sidebar fixed inset-y-0 left-0 z-40 flex w-60 flex-col overflow-y-auto">
+    <div className="min-h-screen bg-background text-foreground">
+      <aside className="resume-navigation border-r border-border bg-surface [&_a:focus-visible]:outline-2 [&_a:focus-visible]:outline-offset-4 [&_a:focus-visible]:outline-primary [&_button:focus-visible]:outline-2 [&_button:focus-visible]:outline-offset-4 [&_button:focus-visible]:outline-primary fixed inset-y-0 left-0 z-40 flex w-60 flex-col overflow-y-auto">
         <Link
           href="/"
           aria-label="rereki. トップページへ"
@@ -63,7 +65,7 @@ export default function ResumeLayout({
           <Link
             href={isLoggedIn ? "/resumes" : "/login"}
             data-selected={isSelected("/resumes")}
-            className="rk-nav-link"
+            className="block rounded px-4 py-3 text-sm text-muted-foreground transition-colors duration-150 hover:bg-accent data-[selected=true]:bg-accent data-[selected=true]:font-semibold data-[selected=true]:text-primary motion-reduce:transition-none"
           >
             履歴書一覧
           </Link>
@@ -71,33 +73,33 @@ export default function ResumeLayout({
           <Link
             href={isLoggedIn ? "/aiUsage" : "/login"}
             data-selected={isSelected("/aiUsage")}
-            className="rk-nav-link"
+            className="block rounded px-4 py-3 text-sm text-muted-foreground transition-colors duration-150 hover:bg-accent data-[selected=true]:bg-accent data-[selected=true]:font-semibold data-[selected=true]:text-primary motion-reduce:transition-none"
           >
             AI使用回数
           </Link>
           <Link
             href="/contact"
             data-selected={isSelected("/contact")}
-            className="rk-nav-link"
+            className="block rounded px-4 py-3 text-sm text-muted-foreground transition-colors duration-150 hover:bg-accent data-[selected=true]:bg-accent data-[selected=true]:font-semibold data-[selected=true]:text-primary motion-reduce:transition-none"
           >
             お問い合わせ
           </Link>
         </nav>
         <div className="mt-auto px-4 pb-4 pt-8">
-          {authError && <p className="rk-error mb-3">{authError}</p>}
+          {authError && <p className="text-sm text-danger mb-3">{authError}</p>}
           {isLoading ? (
-            <p className="rk-muted px-4 py-3 text-sm">ログイン状態を確認中…</p>
+            <p className="text-muted-foreground px-4 py-3 text-sm">ログイン状態を確認中…</p>
           ) : isLoggedIn ? (
             <button
               type="button"
               onClick={handleSignOut}
               disabled={isSigningOut}
-              className="rk-button rk-button--secondary w-full"
+              className={actionButtonVariants({ variant: "secondary", size: "default", className: "w-full" })}
             >
               {isSigningOut ? "ログアウト中…" : "ログアウト"}
             </button>
           ) : (
-            <Link href="/login" className="rk-button rk-button--primary w-full">
+            <Link href="/login" className={actionButtonVariants({ variant: "primary", size: "default", className: "w-full" })}>
               ログイン
             </Link>
           )}

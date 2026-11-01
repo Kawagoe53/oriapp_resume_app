@@ -14,7 +14,7 @@ export default function ChatMessage({ role, content }: ChatMessageProps) {
     >
       <div
         className={`max-w-[85%] whitespace-pre-wrap break-words rounded-lg p-4 text-sm leading-7 sm:max-w-[70%]${
-          role === "ASSISTANT" ? " rk-chat-assistant " : " rk-chat-user"
+          role === "ASSISTANT" ? " border border-border bg-secondary text-foreground " : " bg-primary text-primary-foreground"
         }`}
       >
         {content}

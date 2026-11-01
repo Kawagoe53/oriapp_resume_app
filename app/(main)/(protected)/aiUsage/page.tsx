@@ -76,7 +76,7 @@ export default function AiUsagePage() {
           ) : (
             <Link
               href="/resumes"
-              className="inline-flex rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--rk-primary-hover)]"
+              className="inline-flex rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover"
             >
               履歴書を作成する
             </Link>
