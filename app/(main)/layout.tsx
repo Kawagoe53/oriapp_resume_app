@@ -52,10 +52,11 @@ export default function ResumeLayout({
     <div className="rk-app">
       <aside className="resume-navigation rk-sidebar fixed inset-y-0 left-0 z-40 flex w-60 flex-col overflow-y-auto">
         <Link
-          href={isLoggedIn ? "/resumes" : "/login"}
+          href="/"
+          aria-label="rereki. トップページへ"
           className="mx-8 mb-14 mt-10 inline-block self-start rounded text-3xl font-bold tracking-tight text-black focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-neutral-800"
         >
-          rireki<span>.</span>
+          rereki<span>.</span>
         </Link>
 
         <nav className="space-y-2 px-4">
