@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import ResumeDemo from "./_components/landing/ResumeDemo";
 import ResumeSample from "./_components/landing/ResumeSample";
 import { AI_USAGE_MONTHLY_LIMIT } from "./_libs/aiUsage";
 import "./landing.css";
@@ -37,7 +38,7 @@ export default function Home() {
               <p className="landing-audience">ワーホリ・留学生の英文履歴書づくり</p>
               <h1>オーストラリアで<br />仕事を探す。<br />まず、Resumeから。</h1>
               <p className="landing-lead">何を書けばいいか、英語でどう伝えるか。<br />rereki. は、AIの質問に答えながら<br className="desktop-break" />自分の経験を英文履歴書にまとめるサービスです。</p>
-              <div className="landing-actions"><CreateLink /><a href="#sample" className="landing-button landing-button--outline">完成見本を見る</a></div>
+              <div className="landing-actions"><CreateLink /><ResumeDemo /></div>
               <p className="landing-free">AI作成は月{AI_USAGE_MONTHLY_LIMIT}回まで無料。作成には登録が必要です。</p>
             </div>
             <figure id="sample" className="landing-sample-frame">
