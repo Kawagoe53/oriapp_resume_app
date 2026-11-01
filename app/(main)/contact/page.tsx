@@ -1,5 +1,7 @@
 "use client";
 
+import { actionButtonVariants } from "@/app/_components/ui/actionButtonVariants";
+
 import {
   contactSchema,
   contactTypeLabels,
@@ -84,23 +86,23 @@ export default function ContactPage() {
     <div className="mx-auto flex h-[calc(100dvh-3rem)] min-h-[640px] w-full max-w-2xl flex-col lg:h-[calc(100dvh-4rem)]">
       <header className="mb-5">
         <h1 className="text-2xl font-bold">お問い合わせ</h1>
-        <p className="rk-muted mt-2 text-sm leading-6">
+        <p className="text-muted-foreground mt-2 text-sm leading-6">
           使い方のご質問、不具合のご報告、ご要望などをお送りください。ログインせずにご利用いただけます。
         </p>
       </header>
       {submitted ? (
-        <section className="rounded-xl border border-neutral-200 bg-white p-6 sm:p-8">
+        <section className="rounded-xl border border-border bg-white p-6 sm:p-8">
           <div role="status" aria-live="polite">
             <h2 className="text-lg font-semibold">
               お問い合わせを受け付けました
             </h2>
-            <p className="rk-muted mt-3 text-sm leading-7">
+            <p className="text-muted-foreground mt-3 text-sm leading-7">
               内容を確認のうえ、必要に応じて入力いただいたメールアドレスへご連絡します。
             </p>
           </div>
           <button
             type="button"
-            className="rk-button rk-button--secondary mt-6"
+            className={actionButtonVariants({ variant: "secondary", size: "default", className: "mt-6" })}
             onClick={() => setSubmitted(false)}
           >
             別のお問い合わせを送る
@@ -110,7 +112,7 @@ export default function ContactPage() {
         <form
           onSubmit={handleSubmit(onSubmit)}
           noValidate
-          className="flex flex-1 flex-col gap-4 rounded-xl border border-neutral-200 bg-white p-5 sm:p-6"
+          className="flex flex-1 flex-col gap-4 rounded-xl border border-border bg-white p-5 sm:p-6"
         >
           <fieldset
             disabled={isSubmitting}
@@ -120,7 +122,7 @@ export default function ContactPage() {
             <div className="min-w-0 shrink-0">
               <label htmlFor="contact-type" className="text-sm font-medium">
                 お問い合わせの種類
-                <span className="rk-muted ml-2 text-xs">必須</span>
+                <span className="text-muted-foreground ml-2 text-xs">必須</span>
               </label>
               <select
                 id="contact-type"
@@ -130,7 +132,7 @@ export default function ContactPage() {
                 aria-describedby={
                   errors.type ? "contact-type-error" : undefined
                 }
-                className="mt-2 block w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-base outline-none focus-visible:border-neutral-700 focus-visible:ring-2 focus-visible:ring-neutral-200 disabled:opacity-60"
+                className="mt-2 block w-full rounded-lg border border-input bg-white px-3 py-2 text-base outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 disabled:opacity-60"
               >
                 {Object.entries(contactTypeLabels).map(([value, label]) => (
                   <option key={value} value={value}>
@@ -139,7 +141,7 @@ export default function ContactPage() {
                 ))}
               </select>
               {errors.type && (
-                <p id="contact-type-error" className="rk-error mt-2">
+                <p id="contact-type-error" className="text-sm text-danger mt-2">
                   {errors.type.message}
                 </p>
               )}
@@ -152,7 +154,7 @@ export default function ContactPage() {
                 "aria-invalid": Boolean(errors[key]),
                 "aria-describedby": errors[key] ? `${key}-error` : undefined,
                 className:
-                  "mt-2 block w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-base outline-none focus-visible:border-neutral-700 focus-visible:ring-2 focus-visible:ring-neutral-200 disabled:opacity-60",
+                  "mt-2 block w-full rounded-lg border border-input bg-white px-3 py-2 text-base outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 disabled:opacity-60",
               };
               return (
                 <div
@@ -165,7 +167,7 @@ export default function ContactPage() {
                 >
                   <label htmlFor={key} className="text-sm font-medium">
                     {label}
-                    <span className="rk-muted ml-2 text-xs">必須</span>
+                    <span className="text-muted-foreground ml-2 text-xs">必須</span>
                   </label>
                   {key === "content" ? (
                     <textarea
@@ -178,7 +180,7 @@ export default function ContactPage() {
                     <input {...props} type={type} autoComplete={autoComplete} />
                   )}
                   {errors[key] && (
-                    <p id={`${key}-error`} className="rk-error mt-2">
+                    <p id={`${key}-error`} className="text-sm text-danger mt-2">
                       {errors[key]?.message}
                     </p>
                   )}
@@ -187,14 +189,14 @@ export default function ContactPage() {
             })}
           </fieldset>
           {errors.root && (
-            <p role="alert" className="rk-error">
+            <p role="alert" className="text-sm text-danger">
               {errors.root.message}
             </p>
           )}
           <button
             type="submit"
             disabled={isSubmitting}
-            className="rk-button rk-button--primary w-full shrink-0 sm:w-auto sm:self-start"
+            className={actionButtonVariants({ variant: "primary", size: "default", className: "w-full shrink-0 sm:w-auto sm:self-start" })}
           >
             {isSubmitting ? "送信中…" : "送信する"}
           </button>
