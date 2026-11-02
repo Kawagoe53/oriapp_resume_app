@@ -11,7 +11,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "rereki.",
+  title: "rireki.",
   description: "AIで英文履歴書を作成できるサービス",
 };
 export default function RootLayout({
