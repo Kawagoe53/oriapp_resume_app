@@ -275,3 +275,27 @@
 .resume-content .resume-job:last-child {
   margin-bottom: 0;
 }
+
+@layer components {
+  .form-section {
+    @apply min-w-0 scroll-mt-6 rounded-lg border border-border bg-surface p-5 sm:p-8;
+  }
+  .form-heading {
+    @apply text-lg font-semibold tracking-tight text-primary;
+  }
+  .form-description {
+    @apply mb-6 mt-2 text-sm leading-6 text-muted-foreground;
+  }
+  .form-label {
+    @apply mb-2 block text-sm font-medium;
+  }
+  .form-input {
+    @apply block min-h-11 w-full min-w-0 rounded-md border border-input bg-background px-3 py-2.5 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus-visible:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-danger;
+  }
+  .form-error {
+    @apply mt-2 text-sm text-danger;
+  }
+  .form-remove {
+    @apply inline-flex min-h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-md px-2 text-sm text-danger hover:enabled:bg-red-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-danger disabled:cursor-not-allowed disabled:opacity-40;
+  }
+}
