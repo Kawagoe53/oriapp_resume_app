@@ -10,7 +10,11 @@ import { useForm } from "react-hook-form";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
 
-export default function LogInForm({ passwordResetComplete = false }: { passwordResetComplete?: boolean }) {
+export default function LogInForm({
+  passwordResetComplete = false,
+}: {
+  passwordResetComplete?: boolean;
+}) {
   const router = useRouter();
   const {
     register,
@@ -41,7 +45,9 @@ export default function LogInForm({ passwordResetComplete = false }: { passwordR
         className="space-y-4 w-full max-w-100"
       >
         {passwordResetComplete && (
-          <p role="status">パスワードを再設定しました。新しいパスワードでログインしてください。</p>
+          <p role="status">
+            パスワードを再設定しました。新しいパスワードでログインしてください。
+          </p>
         )}
         <Input
           label="メールアドレス"
@@ -80,6 +86,15 @@ export default function LogInForm({ passwordResetComplete = false }: { passwordR
         <Button type="button" onClick={handleGoogleSignIn}>
           Googleで登録
         </Button>
+        <p className="border-t border-border pt-5 text-center text-sm leading-6 text-muted-foreground">
+          アカウントをお持ちでない方
+          <Link
+            href="/signup"
+            className="ml-2 inline-flex min-h-11 items-center rounded font-semibold text-primary underline underline-offset-4 hover:text-primary-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+          >
+            新規登録
+          </Link>
+        </p>
       </form>
     </div>
   );

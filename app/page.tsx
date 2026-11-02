@@ -74,9 +74,20 @@ export default function Home() {
           </Link>
           <Link
             href="/login"
-            className="inline-flex items-center justify-center rounded bg-primary px-[21px] py-3 text-primary-foreground max-[760px]:px-[15px] max-[760px]:py-2.5"
+            className={actionButtonVariants({
+              variant: "outline",
+              className: "max-[760px]:px-3 max-[760px]:text-xs",
+            })}
           >
             ログイン
+          </Link>
+          <Link
+            href="/signup"
+            className={actionButtonVariants({
+              className: "max-[760px]:px-3 max-[760px]:text-xs",
+            })}
+          >
+            新規登録
           </Link>
         </nav>
       </header>
