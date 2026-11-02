@@ -6,7 +6,7 @@ import { actionButtonVariants } from "./_components/ui/actionButtonVariants";
 import { AI_USAGE_MONTHLY_LIMIT } from "./_libs/aiUsage";
 
 export const metadata: Metadata = {
-  title: "rereki. | ワーホリ・留学生のための英文Resume作成",
+  title: "rireki. | ワーホリ・留学生のための英文Resume作成",
   description:
     "AIの質問に答えながら、オーストラリアの仕事探しに使う英文履歴書を作成。職種選択から編集、PDF保存まで。完成見本も確認できます。",
 };
@@ -99,7 +99,7 @@ export default function Home() {
               <p className="text-sm leading-[2.1] text-muted-foreground max-[760px]:text-[13px]">
                 何を書けばいいか、英語でどう伝えるか。
                 <br />
-                rereki. は、AIの質問に答えながら
+                rireki. は、AIの質問に答えながら
                 <br className="max-[760px]:hidden" />
                 自分の経験を英文履歴書にまとめるサービスです。
               </p>
@@ -214,7 +214,7 @@ export default function Home() {
       <footer className="bg-footer py-8">
         <div className={`${container} flex flex-wrap items-center gap-[26px]`}>
           <Link href="/" className={`${logo} text-primary`}>
-            rereki.
+            rireki.
           </Link>
           <nav
             aria-label="フッターナビゲーション"
@@ -225,7 +225,7 @@ export default function Home() {
             <Link href="/signup">新規登録</Link>
           </nav>
           <p className="w-full text-[10px] text-muted-foreground">
-            © {new Date().getFullYear()} rereki.
+            © {new Date().getFullYear()} rireki.
           </p>
         </div>
       </footer>

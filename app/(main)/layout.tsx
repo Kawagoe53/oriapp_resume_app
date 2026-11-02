@@ -55,10 +55,10 @@ export default function ResumeLayout({
       <aside className="resume-navigation border-r border-border bg-surface [&_a:focus-visible]:outline-2 [&_a:focus-visible]:outline-offset-4 [&_a:focus-visible]:outline-primary [&_button:focus-visible]:outline-2 [&_button:focus-visible]:outline-offset-4 [&_button:focus-visible]:outline-primary fixed inset-y-0 left-0 z-40 flex w-60 flex-col overflow-y-auto">
         <Link
           href="/"
-          aria-label="rereki. トップページへ"
+          aria-label="rireki. トップページへ"
           className="mx-8 mb-14 mt-10 inline-block self-start rounded text-3xl font-bold tracking-tight text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
-          rereki<span className="text-primary">.</span>
+          rireki<span className="text-primary">.</span>
         </Link>
 
         <nav className="space-y-2 px-4">
