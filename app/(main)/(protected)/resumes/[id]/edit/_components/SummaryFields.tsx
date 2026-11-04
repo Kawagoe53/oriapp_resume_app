@@ -1,25 +1,23 @@
-"use client";
-
 import { ResumeEditFormData } from "@/app/_schemas/resumeEditSchema";
-import { UseFormRegister } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
+export default function SummaryFields() {
+  const { register } = useFormContext<ResumeEditFormData>();
 
-type Props = {
-  register: UseFormRegister<ResumeEditFormData>;
-};
-
-export default function SummaryFields({ register }: Props) {
   return (
-    <section>
-      <label htmlFor="summary" className="block mb-2 font-medium">
-        Summary
-      </label>
-
+    <section id="summary-section" className="form-section">
+      <h2 className="form-heading">
+        <label htmlFor="summary">自己PR</label>
+      </h2>
+      <p id="summary-hint" className="form-description">
+        経験や強み、応募先で活かせることを英語でまとめましょう。
+      </p>
       <textarea
         id="summary"
         {...register("summary")}
         rows={6}
-        className="w-full border rounded-md p-3"
-        placeholder="Write your professional summary..."
+        aria-describedby="summary-hint"
+        className="form-input resize-y"
+        placeholder="例：Friendly and reliable team member with experience in customer service…"
       />
     </section>
   );

@@ -4,6 +4,7 @@ import handleGoogleSignIn from "@/app/_libs/googleAuth";
 import { supabase } from "@/app/_libs/supabase"; // 前の工程で作成したファイル
 import { signUpSchema, SignUpSchemaValues } from "@/app/_schemas/authSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
@@ -85,6 +86,15 @@ export default function SignUpForm() {
         <Button type="button" onClick={handleGoogleSignIn}>
           Googleで登録
         </Button>
+        <p className="border-t border-border pt-5 text-center text-sm leading-6 text-muted-foreground">
+          すでにアカウントをお持ちの方
+          <Link
+            href="/login"
+            className="ml-2 inline-flex min-h-11 items-center rounded font-semibold text-primary underline underline-offset-4 hover:text-primary-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+          >
+            ログイン
+          </Link>
+        </p>
       </form>
     </div>
   );
