@@ -8,7 +8,7 @@ import {
 } from "react-hook-form";
 import { Plus, Trash2 } from "lucide-react";
 import { actionButtonVariants } from "@/app/_components/ui/actionButtonVariants";
-import EditField from "./EditField";
+import Input from "@/app/_components/ui/Input";
 type Props = {
   register: UseFormRegister<ResumeEditFormData>;
   errors: FieldErrors<ResumeEditFormData>;
@@ -38,11 +38,12 @@ export default function SkillsFields({
         {fields.map((field, index) => (
           <div key={field.id} className="flex items-start gap-2">
             <div className="min-w-0 flex-1">
-              <EditField
+              <Input
+                variant="edit"
                 label={`スキル ${index + 1}`}
                 registration={register(`skills.${index}.value`)}
                 placeholder="例：Customer service"
-                error={errors.skills?.[index]?.value?.message}
+                errorMessage={errors.skills?.[index]?.value?.message}
               />
             </div>
             <button

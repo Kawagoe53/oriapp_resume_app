@@ -1,6 +1,6 @@
 import { ResumeEditFormData } from "@/app/_schemas/resumeEditSchema";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
-import EditField from "./EditField";
+import Input from "@/app/_components/ui/Input";
 type Props = {
   register: UseFormRegister<ResumeEditFormData>;
   errors: FieldErrors<ResumeEditFormData>;
@@ -13,22 +13,25 @@ export default function EducationFields({ register, errors }: Props) {
         学校名・専攻・卒業年を入力してください。
       </p>
       <div className="grid gap-5 md:grid-cols-2">
-        <EditField
+        <Input
+          variant="edit"
           label="学校名"
           registration={register("educationSchool")}
-          error={errors.educationSchool?.message}
+          errorMessage={errors.educationSchool?.message}
         />
-        <EditField
+        <Input
+          variant="edit"
           label="専攻"
           registration={register("educationMajor")}
-          error={errors.educationMajor?.message}
+          errorMessage={errors.educationMajor?.message}
         />
-        <EditField
+        <Input
+          variant="edit"
           label="卒業年"
           inputMode="numeric"
           placeholder="例：2024"
           registration={register("educationYear")}
-          error={errors.educationYear?.message}
+          errorMessage={errors.educationYear?.message}
         />
       </div>
     </section>

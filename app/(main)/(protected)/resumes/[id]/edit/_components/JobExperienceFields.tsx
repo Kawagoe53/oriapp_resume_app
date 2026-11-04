@@ -8,7 +8,7 @@ import {
   UseFormRegister,
 } from "react-hook-form";
 import { Plus, Trash2 } from "lucide-react";
-import EditField from "./EditField";
+import Input from "@/app/_components/ui/Input";
 type Props = {
   index: number;
   register: UseFormRegister<ResumeEditFormData>;
@@ -55,12 +55,13 @@ export default function JobExperienceFields({
             ["endDate", "勤務終了日", "date"],
           ] as const
         ).map(([name, label, type]) => (
-          <EditField
+          <Input
+            variant="edit"
             key={name}
             label={label + (name !== "endDate" ? "（必須）" : "")}
             type={type}
             registration={register(`jobExperiences.${index}.${name}`)}
-            error={jobErrors?.[name]?.message}
+            errorMessage={jobErrors?.[name]?.message}
             hint={
               name === "endDate"
                 ? "現在も勤務している場合は空欄にしてください。"

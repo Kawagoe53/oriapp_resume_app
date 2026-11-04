@@ -1,6 +1,6 @@
 import { ResumeEditFormData } from "@/app/_schemas/resumeEditSchema";
 import { FieldErrors, UseFormRegister } from "react-hook-form";
-import EditField from "./EditField";
+import Input from "@/app/_components/ui/Input";
 
 type Props = {
   register: UseFormRegister<ResumeEditFormData>;
@@ -23,13 +23,14 @@ export default function PersonalInformationFields({ register, errors }: Props) {
       </p>
       <div className="grid gap-5 md:grid-cols-2">
         {fields.map(([name, label, type, autoComplete]) => (
-          <EditField
+          <Input
+            variant="edit"
             key={name}
             label={label}
             type={type}
             autoComplete={autoComplete}
             registration={register(name)}
-            error={errors[name]?.message}
+            errorMessage={errors[name]?.message}
           />
         ))}
       </div>
