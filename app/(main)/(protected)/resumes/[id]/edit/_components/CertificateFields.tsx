@@ -1,5 +1,6 @@
 import { ResumeEditFormData } from "@/app/_schemas/resumeEditSchema";
 import {
+  FieldArrayWithId,
   FieldErrors,
   UseFieldArrayAppend,
   UseFieldArrayRemove,
@@ -11,7 +12,7 @@ import EditField from "./EditField";
 type Props = {
   register: UseFormRegister<ResumeEditFormData>;
   errors: FieldErrors<ResumeEditFormData>;
-  fields: { id: string }[];
+  fields: FieldArrayWithId<ResumeEditFormData, "certificate", "id">[];
   append: UseFieldArrayAppend<ResumeEditFormData, "certificate">;
   remove: UseFieldArrayRemove;
 };
