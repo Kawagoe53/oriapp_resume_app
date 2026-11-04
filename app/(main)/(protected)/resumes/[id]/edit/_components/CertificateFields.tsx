@@ -1,28 +1,28 @@
+import { actionButtonVariants } from "@/app/_components/ui/actionButtonVariants";
 import { ResumeEditFormData } from "@/app/_schemas/resumeEditSchema";
+import { Plus, Trash2 } from "lucide-react";
 import {
   FieldArrayWithId,
-  FieldErrors,
   UseFieldArrayAppend,
   UseFieldArrayRemove,
-  UseFormRegister,
+  useFormContext,
 } from "react-hook-form";
-import { Plus, Trash2 } from "lucide-react";
-import { actionButtonVariants } from "@/app/_components/ui/actionButtonVariants";
 import Input from "@/app/_components/ui/Input";
 type Props = {
-  register: UseFormRegister<ResumeEditFormData>;
-  errors: FieldErrors<ResumeEditFormData>;
   fields: FieldArrayWithId<ResumeEditFormData, "certificate", "id">[];
   append: UseFieldArrayAppend<ResumeEditFormData, "certificate">;
   remove: UseFieldArrayRemove;
 };
 export default function CertificateFields({
-  register,
-  errors,
   fields,
   append,
   remove,
 }: Props) {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<ResumeEditFormData>();
+
   return (
     <section id="certificate" className="form-section">
       <h2 className="form-heading">資格</h2>

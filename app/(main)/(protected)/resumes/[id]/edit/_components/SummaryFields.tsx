@@ -1,10 +1,8 @@
 import { ResumeEditFormData } from "@/app/_schemas/resumeEditSchema";
-import { UseFormRegister } from "react-hook-form";
-export default function SummaryFields({
-  register,
-}: {
-  register: UseFormRegister<ResumeEditFormData>;
-}) {
+import { useFormContext } from "react-hook-form";
+export default function SummaryFields() {
+  const { register } = useFormContext<ResumeEditFormData>();
+
   return (
     <section id="summary-section" className="form-section">
       <h2 className="form-heading">

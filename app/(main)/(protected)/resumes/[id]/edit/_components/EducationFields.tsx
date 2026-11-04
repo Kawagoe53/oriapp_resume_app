@@ -1,11 +1,12 @@
 import { ResumeEditFormData } from "@/app/_schemas/resumeEditSchema";
-import { FieldErrors, UseFormRegister } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import Input from "@/app/_components/ui/Input";
-type Props = {
-  register: UseFormRegister<ResumeEditFormData>;
-  errors: FieldErrors<ResumeEditFormData>;
-};
-export default function EducationFields({ register, errors }: Props) {
+export default function EducationFields() {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<ResumeEditFormData>();
+
   return (
     <section id="education" className="form-section">
       <h2 className="form-heading">学歴</h2>

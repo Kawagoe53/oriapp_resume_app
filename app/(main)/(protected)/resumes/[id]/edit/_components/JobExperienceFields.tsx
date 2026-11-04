@@ -1,30 +1,25 @@
 "use client";
 
 import { ResumeEditFormData } from "@/app/_schemas/resumeEditSchema";
-import {
-  Control,
-  FieldErrors,
-  useFieldArray,
-  UseFormRegister,
-} from "react-hook-form";
 import { Plus, Trash2 } from "lucide-react";
+import { useFieldArray, useFormContext } from "react-hook-form";
 import Input from "@/app/_components/ui/Input";
 type Props = {
   index: number;
-  register: UseFormRegister<ResumeEditFormData>;
-  control: Control<ResumeEditFormData>;
   onRemove: () => void;
   canRemove: boolean;
-  errors: FieldErrors<ResumeEditFormData>;
 };
 export default function JobExperienceFields({
   index,
-  register,
-  control,
   onRemove,
   canRemove,
-  errors,
 }: Props) {
+  const {
+    register,
+    control,
+    formState: { errors },
+  } = useFormContext<ResumeEditFormData>();
+
   const { fields, append, remove } = useFieldArray({
     control,
     name: `jobExperiences.${index}.description`,

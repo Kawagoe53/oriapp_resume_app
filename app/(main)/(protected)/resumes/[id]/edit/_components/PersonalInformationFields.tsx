@@ -1,11 +1,7 @@
 import { ResumeEditFormData } from "@/app/_schemas/resumeEditSchema";
-import { FieldErrors, UseFormRegister } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import Input from "@/app/_components/ui/Input";
 
-type Props = {
-  register: UseFormRegister<ResumeEditFormData>;
-  errors: FieldErrors<ResumeEditFormData>;
-};
 const fields = [
   ["fullName", "氏名", "text", "name"],
   ["email", "メールアドレス", "email", "email"],
@@ -14,7 +10,12 @@ const fields = [
   ["visaInfo", "ビザ情報", "text", "off"],
   ["availability", "勤務開始可能日・勤務可能時間", "text", "off"],
 ] as const;
-export default function PersonalInformationFields({ register, errors }: Props) {
+export default function PersonalInformationFields() {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<ResumeEditFormData>();
+
   return (
     <section id="personal" className="form-section">
       <h2 className="form-heading">基本情報</h2>
