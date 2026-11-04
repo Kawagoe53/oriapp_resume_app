@@ -1,3 +1,5 @@
+"use client";
+
 import { ResumeEditFormData } from "@/app/_schemas/resumeEditSchema";
 import {
   Control,
